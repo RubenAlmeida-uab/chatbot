@@ -1,0 +1,15 @@
+body {
+    background-image: url('/assets/background.jpg'); /* Ajuste para a imagem correta */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.9); /* Fundo branco semi-transparente */
+    padding: 20px;
+    border-radius: 10px;
+}
+
+button {
+    margin-top: 10px;
