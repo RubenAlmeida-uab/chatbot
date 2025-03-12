@@ -57,6 +57,24 @@ def gerar_pdf_carga():
 def gerar_pdf_unidades():
     return gerar_pdf_generico("unidades", "Relatório das Unidades Curriculares")
 
+# 📌 Exportar PDF da Frequência de Comandos por Categoria
+@app.route('/gerar_pdf_frequencia', methods=['GET'])
+def gerar_pdf_frequencia_comandos():
+    return gerar_pdf_generico("frequencia_comandos_categoria", "Relatório de Frequência de Comandos por Categoria")
+
+
+# 📌 Exportar PDF dos Comandos Sem Resposta
+@app.route('/gerar_pdf_sem_resposta', methods=['GET'])
+def gerar_pdf_comandos_sem_resposta():
+    return gerar_pdf_generico("comandos_sem_resposta", "Relatório de Comandos Sem Resposta")
+
+
+# 📌 Exportar PDF dos Comandos Mais Pesquisados
+@app.route('/gerar_pdf_pesquisados', methods=['GET'])
+def gerar_pdf_comandos_pesquisados():
+    return gerar_pdf_generico("comandos_pesquisados", "Relatório de Comandos Mais Pesquisados")
+
+
 
 # 🔹 Função para tela e gerar o PDF
 def gerar_pdf_generico(tipo, titulo_pdf):
