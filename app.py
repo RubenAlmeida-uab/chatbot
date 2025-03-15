@@ -1,9 +1,11 @@
-import os
-import datetime
-from fpdf import FPDF
 import dash
 from dash import dcc, html, page_container
 import dash_bootstrap_components as dbc
+import sys
+import os
+
+# Adiciona o diretório raiz do projeto ao sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 
 app = dash.Dash(
@@ -20,15 +22,11 @@ sidebar = dbc.Nav(
             html.Hr(),
         ]),
         dbc.NavLink("Início", href="/home", active="exact"),
-        dbc.NavLink("Distribuição de Carga", href="/carga", active="exact"),
-        dbc.NavLink("Tabela Docentes", href="/docentes", active="exact"),
-        dbc.NavLink("Unidades Curriculares", href="/unidades", active="exact"),
-
-        html.Hr(),  # Separador
-
         dbc.NavLink("📊 Comandos Pesquisados", href="/comandos_pesquisados", active="exact"),
         dbc.NavLink("❓ Comandos sem Resposta", href="/comandos_sem_resposta", active="exact"),
         dbc.NavLink("📈 Frequência por Categoria", href="/frequencia_comandos_categoria", active="exact"),
+        dbc.NavLink("➕ Importar Novo", href="/importar_novo", active="exact"),
+
 
         html.Div([
             html.Label("Fonte de Dados:"),
