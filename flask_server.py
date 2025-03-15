@@ -1,16 +1,17 @@
 import sys
-from flask import Flask, jsonify
 import time
 import pyautogui
 import os
 from fpdf import FPDF
-
-
+from flask import Flask, jsonify, request
+from backend.obter_resposta import buscar_resposta
+from flask import Response
+import json
 
 # Adiciona o diretório raiz do projeto ao PYTHONPATH
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from backend.conexao_mysql import obter_dados_mysql
+from backend.conexao_mysql import obter_dados_mysql, obter_conexao_mysql
 from dados.carregar_dados import carregar_dados_csv
 
 app = Flask(__name__)
@@ -33,29 +34,26 @@ def testar_conexao(fonte, tabela):
     return jsonify({"dados": dados})
 
 
+@app.route('/obter_resposta', methods=['GET'])
+def obter_resposta():
+    comando = request.args.get('comando', '').strip().lower()
+
+    if not comando:
+        return Response(json.dumps({"erro": "Comando não informado!"}), mimetype='application/json'), 400
+
+    resultado = buscar_resposta(comando)  # 🔹 Chama diretamente a função do obter_resposta.py
+
+    return jsonify(resultado)
+
+
+if __name__ == '__main__':
+    app.run(host='127.0.0.1', port=5000, debug=True)
+
 
 # Diretório de exportação
 EXPORT_FOLDER = os.path.join(os.getcwd(), "exportação_PDF")
 if not os.path.exists(EXPORT_FOLDER):
     os.makedirs(EXPORT_FOLDER)
-
-
-# 📌 Exportar PDF da Tabela de Docentes
-@app.route('/gerar_pdf_tabela', methods=['GET'])
-def gerar_pdf_tabela():
-    return gerar_pdf_generico("docentes", "Relatório da Tabela de Docentes")
-
-
-# 📌 Exportar PDF da Distribuição de Carga Docente
-@app.route('/gerar_pdf_carga', methods=['GET'])
-def gerar_pdf_carga():
-    return gerar_pdf_generico("carga", "Relatório da Carga Docente")
-
-
-# 📌 Exportar PDF das Unidades Curriculares
-@app.route('/gerar_pdf_unidades', methods=['GET'])
-def gerar_pdf_unidades():
-    return gerar_pdf_generico("unidades", "Relatório das Unidades Curriculares")
 
 # 📌 Exportar PDF da Frequência de Comandos por Categoria
 @app.route('/gerar_pdf_frequencia', methods=['GET'])
