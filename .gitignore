@@ -4,4 +4,4 @@ __pycache__
 .env
 
 # Ficheiros não incluidos
-controller/teste_controllers.py
+controller/teste_*.py
