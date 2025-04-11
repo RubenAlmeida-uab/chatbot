@@ -1,6 +1,7 @@
 import io
 import os
 from datetime import datetime
+from mock_models import MockConsultaModel as ConsultaModel
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
