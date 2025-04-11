@@ -1,3 +1,4 @@
 # Não importar
-_pycache
+__pycache__
 .venv
+.env
