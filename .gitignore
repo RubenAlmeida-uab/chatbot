@@ -2,3 +2,6 @@
 __pycache__
 .venv
 .env
+
+# Ficheiros não incluidos
+controller/teste_controllers.py
