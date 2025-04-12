@@ -1,0 +1,55 @@
+{
+    "primeiro_acesso": "2025-04-01 10:00:00",
+    "ultimo_acesso": "2025-04-12 18:33:01",
+    "total_consultas": 42,
+    "utilizadores_unicos": 5,
+    "comandos_populares": [
+        [
+            "puc",
+            18
+        ],
+        [
+            "ajuda",
+            10
+        ],
+        [
+            "listar_seccoes",
+            8
+        ],
+        [
+            "avaliacao",
+            6
+        ]
+    ],
+    "seccoes_populares": [
+        [
+            "avaliacao",
+            12
+        ],
+        [
+            "metodologia",
+            10
+        ],
+        [
+            "recursos",
+            8
+        ]
+    ],
+    "utilizadores_ativos": [
+        [
+            "123456",
+            "Utilizador1",
+            20
+        ],
+        [
+            "789012",
+            "Utilizador2",
+            12
+        ],
+        [
+            "345678",
+            "Utilizador3",
+            10
+        ]
+    ]
+}
