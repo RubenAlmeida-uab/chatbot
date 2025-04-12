@@ -1,11 +1,13 @@
 import io
 import os
 from datetime import datetime
-from mock_models import MockConsultaModel as ConsultaModel
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import discord
+from model.mock_models import MockConsultaModel as ConsultaModel
+
+
 
 class BotController:
     """
@@ -129,6 +131,9 @@ class BotController:
                 utilizador_id = args[0]
                 historico = self.obter_utilizador_historico(utilizador_id, admin_id)
                 return historico
+            elif comando == "ajuda":
+                # Aqui adiciona a resposta esperada para o comando ajuda
+                return "Comandos disponíveis: estatisticas, relatorio, grafico_comandos, grafico_seccoes, historico_utilizador"
             else:
                 return None  # Comando não reconhecido
         except Exception as e:

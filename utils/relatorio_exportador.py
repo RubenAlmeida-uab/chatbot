@@ -1,11 +1,41 @@
 import markdown2
 from weasyprint import HTML
+import json
+from datetime import datetime
 
-def gerar_relatorio_html(md_path, html_path):
+
+
+def gerar_relatorio_md(caminho_json, caminho_saida_md):
+    with open(caminho_json, "r", encoding="utf-8") as f:
+        dados = json.load(f)
+
+    linhas = [
+        "# 📊 Relatório de Utilização do Bot\n",
+        f"**Data de Geração:** {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n",
+        f"**Período:** {dados['primeiro_acesso']} até {dados['ultimo_acesso']}\n",
+        f"**Total de Consultas:** {dados['total_consultas']}\n",
+        f"**Utilizadores Únicos:** {dados['utilizadores_unicos']}\n\n",
+
+        "## 🔹 Comandos Mais Populares\n"
+    ]
+    for comando, count in dados['comandos_populares']:
+        linhas.append(f"- {comando}: {count} vezes")
+
+    linhas.append("\n## 🔹 Secções Mais Consultadas")
+    for seccao, count in dados['seccoes_populares']:
+        linhas.append(f"- {seccao}: {count} vezes")
+
+    linhas.append("\n## 🔹 Utilizadores Mais Ativos")
+    for uid, nome, count in dados['utilizadores_ativos']:
+        linhas.append(f"- {nome} (ID: {uid}): {count} comandos")
+
+    with open(caminho_saida_md, "w", encoding="utf-8") as f:
+        f.write("\n".join(linhas))
+
+    print(f"✅ Relatório gerado: {caminho_saida_md}")
+
+def gerar_pdf_a_partir_md(md_path, pdf_path):
     with open(md_path, "r", encoding="utf-8") as f:
         html = markdown2.markdown(f.read())
-    with open(html_path, "w", encoding="utf-8") as f:
-        f.write(html)
-
-def gerar_pdf(html_path, pdf_path):
-    HTML(html_path).write_pdf(pdf_path)
+    HTML(string=html).write_pdf(pdf_path)
+    print(f"✅ PDF gerado em: {pdf_path}")
