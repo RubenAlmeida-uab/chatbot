@@ -1,0 +1,10 @@
+# Estrutura da Equipa
+
+As equipas devem ser compostas por 3 a 5 elementos com funções definidas:
+- Coordenador
+- Programador
+- Documentador
+- Testador
+
+Q: Posso mudar de equipa depois de formada?
+A: Apenas com autorização do docente.
