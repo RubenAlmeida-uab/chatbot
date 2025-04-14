@@ -2,7 +2,14 @@ import markdown2
 from weasyprint import HTML
 import json
 from datetime import datetime
+import os
 
+def gerar_nomes_ficheiros(base_dir="estatistica/relatorios"):
+    data_hoje = datetime.now().strftime("%Y%m%d")
+    json_path = os.path.join(base_dir, f"estatisticas_{data_hoje}.json")
+    md_path = os.path.join(base_dir, f"relatorio_{data_hoje}.md")
+    pdf_path = os.path.join(base_dir, f"relatorio_{data_hoje}.pdf")
+    return json_path, md_path, pdf_path
 
 
 def gerar_relatorio_md(caminho_json, caminho_saida_md):
@@ -15,9 +22,9 @@ def gerar_relatorio_md(caminho_json, caminho_saida_md):
         f"**Período:** {dados['primeiro_acesso']} até {dados['ultimo_acesso']}\n",
         f"**Total de Consultas:** {dados['total_consultas']}\n",
         f"**Utilizadores Únicos:** {dados['utilizadores_unicos']}\n\n",
-
         "## 🔹 Comandos Mais Populares\n"
     ]
+
     for comando, count in dados['comandos_populares']:
         linhas.append(f"- {comando}: {count} vezes")
 
@@ -39,3 +46,4 @@ def gerar_pdf_a_partir_md(md_path, pdf_path):
         html = markdown2.markdown(f.read())
     HTML(string=html).write_pdf(pdf_path)
     print(f"✅ PDF gerado em: {pdf_path}")
+

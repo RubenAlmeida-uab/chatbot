@@ -1,10 +1,15 @@
 import unittest
 import os
-import asyncio  # <-- Adiciona esta importação
+import asyncio
 from model.mock_models import MockDadosModel as DadosModel
-from model.consulta_model import ConsultaModel
-from utils.relatorio_exportador import gerar_relatorio_md, gerar_pdf_a_partir_md
+from model.mock_models import MockConsultaModel as ConsultaModel  # <- usar mock
+from utils.relatorio_exportador import (
+    gerar_relatorio_md,
+    gerar_pdf_a_partir_md,
+    gerar_nomes_ficheiros
+)
 from controller.bot_controller import BotController
+
 
 
 class TestBotFunctionality(unittest.TestCase):
@@ -27,9 +32,7 @@ class TestBotFunctionality(unittest.TestCase):
         estatisticas = self.consulta_model.obter_estatisticas()
         self.assertGreater(estatisticas['total_consultas'], 0)
 
-        json_path = "estatistica/estatisticas.json"
-        md_path = "estatistica/relatorio.md"
-        pdf_path = "estatistica/relatorio.pdf"
+        json_path, md_path, pdf_path = gerar_nomes_ficheiros(base_dir="estatistica/testes")
 
         self.consulta_model.exportar_json(json_path)
         gerar_relatorio_md(json_path, md_path)
@@ -52,8 +55,7 @@ class TestBotFunctionality(unittest.TestCase):
         self.assertIn("ajuda", [comando[0] for comando in estatisticas['comandos_populares']])
 
     def test_gerar_relatorio_markdown(self):
-        json_path = "estatistica/estatisticas.json"
-        md_path = "estatistica/relatorio.md"
+        json_path, md_path, _ = gerar_nomes_ficheiros(base_dir="estatistica/testes")
         self.consulta_model.exportar_json(json_path)
         gerar_relatorio_md(json_path, md_path)
         self.assertTrue(os.path.exists(md_path))
@@ -62,11 +64,13 @@ class TestBotFunctionality(unittest.TestCase):
             self.assertIn("Relatório de Utilização do Bot", conteudo)
 
     def test_gerar_pdf_a_partir_md(self):
-        md_path = "estatistica/relatorio.md"
-        pdf_path = "estatistica/relatorio.pdf"
-        gerar_pdf_a_partir_md(md_path, pdf_path)
+        json_path, md_path, pdf_path = gerar_nomes_ficheiros(base_dir="estatistica/testes")
+        self.consulta_model.exportar_json(json_path)  # gera o .json
+        gerar_relatorio_md(json_path, md_path)  # garante que existe o .md
+        gerar_pdf_a_partir_md(md_path, pdf_path)  # agora sim
         self.assertTrue(os.path.exists(pdf_path))
 
 
 if __name__ == "__main__":
     unittest.main()
+
