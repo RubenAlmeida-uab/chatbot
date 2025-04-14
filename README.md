@@ -3,10 +3,10 @@
 Instalar os requirements:
 
 ```
-pip install -f requirements.txt
+pip install -r requirements.txt
 ```
 Para os testes do projeto:
 
 ```
-pip install -f requirements-testes.txt
+pip install -r requirements-testes.txt
 ```
