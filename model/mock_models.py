@@ -34,8 +34,6 @@ class MockDadosModel:
             """
         return f"Conteúdo simulado da secção: {nome}"
 
-
-
     def registar_consulta(self, utilizador_id, nome, comando, seccao):
         # Regista a consulta simulada
         print(f"[Mock] Consulta registada: {comando} - {seccao}")
@@ -78,13 +76,8 @@ class MockDadosModel:
         return [r for r in self.registos if r["utilizador_id"] == utilizador_id]
 
 
-class MockConsultaModel(MockDadosModel):
+class MockConsultaModel(MockDadosModel):  # Certifique-se de que a classe existe aqui
+    # Método que registra consulta
     def registar_consulta(self, utilizador_id, nome, comando, seccao):
         print(f"[Mock] Consulta registada: {comando} - {seccao}")
-        self.registos.append({  # ← esta linha estava em falta!
-            "data": datetime.now().isoformat(),
-            "utilizador_id": utilizador_id,
-            "nome": nome,
-            "comando": comando,
-            "secao": seccao
-        })
+        # Pode adicionar lógica extra para armazenar dados, se necessário
