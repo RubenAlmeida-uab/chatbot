@@ -1,45 +1,83 @@
 import json
+import os
+from collections import Counter
+from datetime import datetime
+
+
 
 class MockDadosModel:
     def __init__(self):
-        # Define algumas seções de exemplo
-        self.secoes = {
-            "competencias": "Competências: Python, Java, C++",
-            "projetos": "Projetos: Chatbot, API, WebApp"
-        }
+        # Inicializao atributo registos como uma lista vazia
+        self.registos = []
 
-    def obter_todas_seccoes(self):
-        # Retorna uma lista com as chaves das seções
-        return list(self.secoes.keys())
+    @staticmethod
+    def obter_todas_seccoes():
+        return ["competencias", "metodologia", "avaliacao", "ajuda"]
 
-    def obter_seccao(self, secao):
-        # Retorna o conteúdo da seção ou uma mensagem se não existir
-        return self.secoes.get(secao, "Seção não encontrada")
+    @staticmethod
+    def obter_seccao(nome):
+        if nome == "competencias":
+            return "Conteúdo da seção Competências"
+        elif nome == "ajuda":
+            return """
+# 📚 Bot LDS - Comandos Disponíveis 📚
 
+## Informações Gerais
+`!puc` - Visão geral do Plano da Unidade Curricular
+`!unidade_curricular` - Descrição detalhada da disciplina
+`!listar_seccoes` - Lista todas as secções disponíveis para consulta
 
-class MockConsultaModel:
-    def __init__(self):
-        # Lista para registar consultas feitas
-        self.consultas = []
+## Conteúdo Acadêmico
+`!competencias` - Competências a desenvolver na disciplina
+`!roteiro` - Roteiro completo do conteúdo a trabalhar
+`!metodologia` - Métodos de trabalho e aprendizagem
+            """
+        return f"Conteúdo simulado da secção: {nome}"
 
-    def registar_consulta(self, id, nome, comando, secao):
-        # Simula o registro de uma consulta, armazenando o comando e a seção solicitada
-        self.consultas.append((comando, secao))
+    def registar_consulta(self, utilizador_id, nome, comando, seccao):
+        # Regista a consulta simulada
+        print(f"[Mock] Consulta registada: {comando} - {seccao}")
+        self.registos.append({
+            "data": datetime.now().isoformat(),
+            "utilizador_id": utilizador_id,
+            "nome": nome,
+            "comando": comando,
+            "secao": seccao
+        })
 
     def obter_estatisticas(self):
-        # Calcula o total de consultas e agrupa quantas vezes cada comando aparece
-        total = len(self.consultas)
-        comandos_populares = {}
-        for comando, secao in self.consultas:
-            comandos_populares[comando] = comandos_populares.get(comando, 0) + 1
+        # Retorna as estatísticas simuladas
+        total = len(self.registos)
+        print(f"Total de registros: {total}")  # Verifica o total de registros
+        comandos = Counter(r['comando'] for r in self.registos)
+        secoes = Counter(r['secao'] for r in self.registos if r['secao'])
+        utilizadores = Counter((r['utilizador_id'], r['nome']) for r in self.registos)
+        datas = [r['data'] for r in self.registos]
 
-        # Convertendo o dicionário para uma lista de tuplas para manter um formato similar
-        comandos_populares = list(comandos_populares.items())
-        return {"total_consultas": total, "comandos_populares": comandos_populares}
+        return {
+            "primeiro_acesso": min(datas) if datas else "",
+            "ultimo_acesso": max(datas) if datas else "",
+            "total_consultas": total,
+            "utilizadores_unicos": len(set(r["utilizador_id"] for r in self.registos)),
+            "comandos_populares": list(comandos.items()),
+            "seccoes_populares": list(secoes.items()),
+            "utilizadores_ativos": [(uid, nome, count) for (uid, nome), count in utilizadores.items()]
+        }
 
-    def exportar_json(self, path):
-        # Exporta as estatísticas para um ficheiro JSON
-        stats = self.obter_estatisticas()
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(stats, f, indent=4)
+    def exportar_json(self, caminho="estatisticas/estatisticas.json"):
+        # Exporta as estatísticas para um arquivo JSON
+        os.makedirs(os.path.dirname(caminho), exist_ok=True)
+        with open(caminho, "w", encoding="utf-8") as f:
+            json.dump(self.obter_estatisticas(), f, indent=4, ensure_ascii=False)
+        print(f"✅ Estatísticas exportadas para: {caminho}")
 
+    def obter_historico_utilizador(self, utilizador_id):
+        # Retorna o histórico de um utilizador específico
+        return [r for r in self.registos if r["utilizador_id"] == utilizador_id]
+
+
+class MockConsultaModel(MockDadosModel):  # Certifique-se de que a classe existe aqui
+    # Método que registra consulta
+    def registar_consulta(self, utilizador_id, nome, comando, seccao):
+        print(f"[Mock] Consulta registada: {comando} - {seccao}")
+        # Pode adicionar lógica extra para armazenar dados, se necessário
