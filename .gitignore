@@ -2,8 +2,14 @@
 __pycache__
 .venv
 .env
+bin
+lib
+lib64
+pyvenv.cfg
+share
+include
 
 # Ficheiros não incluidos
-controller/teste_*
-view/teste_*
-model/teste_*
+controller/teste*
+view/teste*
+model/teste*
