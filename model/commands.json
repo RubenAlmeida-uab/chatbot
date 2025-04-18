@@ -1,0 +1,92 @@
+{
+    "help": {
+        "description": "Mostra a lista de comandos disponíveis ou ajuda sobre um comando específico",
+        "usage": "!help [comando]",
+        "admin_only": false,
+        "created_at": "2024-04-14T00:00:00"
+    },
+    "uc": {
+        "description": "Informações sobre a unidade curricular",
+        "usage": "!uc",
+        "admin_only": false,
+        "created_at": "2024-04-14T00:00:00"
+    },
+    "competencias": {
+        "description": "Competências a serem adquiridas na unidade curricular",
+        "usage": "!competencias",
+        "admin_only": false,
+        "created_at": "2024-04-14T00:00:00"
+    },
+    "roteiro": {
+        "description": "Conteúdo e tópicos abordados na unidade curricular",
+        "usage": "!roteiro",
+        "admin_only": false,
+        "created_at": "2024-04-14T00:00:00"
+    },
+    "metodologia": {
+        "description": "Método de organização e divisão da disciplina",
+        "usage": "!metodologia",
+        "admin_only": false,
+        "created_at": "2024-04-14T00:00:00"
+    },
+    "recursos": {
+        "description": "Recursos disponíveis para a unidade curricular",
+        "usage": "!recursos",
+        "admin_only": false,
+        "created_at": "2024-04-14T00:00:00"
+    },
+    "calendario": {
+        "description": "Calendário e datas importantes da unidade curricular",
+        "usage": "!calendario",
+        "admin_only": false,
+        "created_at": "2024-04-14T00:00:00"
+    },
+    "avaliacao": {
+        "description": "Informações sobre o processo de avaliação",
+        "usage": "!avaliacao",
+        "admin_only": false,
+        "created_at": "2024-04-14T00:00:00"
+    },
+    "exame": {
+        "description": "Informações sobre o exame final",
+        "usage": "!exame",
+        "admin_only": false,
+        "created_at": "2024-04-14T00:00:00"
+    },
+    "ia": {
+        "description": "Informações sobre o uso de IA na unidade curricular",
+        "usage": "!ia",
+        "admin_only": false,
+        "created_at": "2024-04-14T00:00:00"
+    },
+    "estrutura": {
+        "description": "Estrutura da equipa e organização do trabalho",
+        "usage": "!estrutura",
+        "admin_only": false,
+        "created_at": "2024-04-14T00:00:00"
+    },
+    "cartao": {
+        "description": "Informações sobre o cartão de aprendizagem",
+        "usage": "!cartao",
+        "admin_only": false,
+        "created_at": "2024-04-14T00:00:00"
+    },
+    "relatorio": {
+        "description": "Gera um relatório das interações dos utilizadores",
+        "usage": "!relatorio [tipo]",
+        "admin_only": true,
+        "created_at": "2024-04-14T00:00:00"
+    },
+    "estatisticas": {
+        "description": "Mostra estatísticas de uso do bot",
+        "usage": "!estatisticas",
+        "admin_only": true,
+        "created_at": "2024-04-14T00:00:00"
+    },
+    "historico": {
+        "description": "Mostra o histórico de interações de um utilizador",
+        "usage": "!historico @utilizador",
+        "admin_only": true,
+        "created_at": "2024-04-14T00:00:00"
+    }
+}
