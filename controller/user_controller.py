@@ -1,5 +1,5 @@
-from model.mock_models import MockDadosModel as DadosModel
-from model.mock_models import MockConsultaModel as ConsultaModel
+from model.dados_model import DadosModel
+from model.consulta_model import ConsultaModel
 
 class UserController:
     """
