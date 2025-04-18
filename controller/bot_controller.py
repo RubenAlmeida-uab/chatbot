@@ -1,12 +1,11 @@
 import io
 import os
 from datetime import datetime
+from model.consulta_model import ConsultaModel
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import discord
-from model.mock_models import MockConsultaModel as ConsultaModel
-
 
 
 class BotController:
