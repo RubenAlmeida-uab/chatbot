@@ -48,11 +48,24 @@ class TestBotFunctionality(unittest.TestCase):
         self.assertIn("Competências", dados)
 
     def test_registrar_consultas(self):
+        # Obter o número atual de consultas antes de registrar nova
+        estatisticas_antes = self.consulta_model.obter_estatisticas()
+        total_antes = estatisticas_antes['total_consultas']
+
+        # Registar nova consulta
         self.consulta_model.registar_consulta("1", "João", "ajuda", "competencias")
-        estatisticas = self.consulta_model.obter_estatisticas()
-        print(estatisticas)
-        self.assertEqual(estatisticas['total_consultas'], 1)
-        self.assertIn("ajuda", [comando[0] for comando in estatisticas['comandos_populares']])
+
+        # Obter estatísticas novamente
+        estatisticas_depois = self.consulta_model.obter_estatisticas()
+        total_depois = estatisticas_depois['total_consultas']
+
+        # Verificar que aumentou exatamente 1
+        self.assertEqual(total_depois, total_antes + 1)
+
+        # Verificar que o comando foi registado corretamente
+        comandos = [comando[0] for comando in estatisticas_depois['comandos_populares']]
+        self.assertIn("ajuda", comandos)
+
 
     def test_gerar_relatorio_markdown(self):
         json_path, md_path, _ = gerar_nomes_ficheiros(base_dir="estatistica/testes")
