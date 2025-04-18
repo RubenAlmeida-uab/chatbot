@@ -9,6 +9,7 @@ lib64
 pyvenv.cfg
 share
 include
+models/mock_models.py
 
 # Ficheiros não incluidos
 controller/teste*
