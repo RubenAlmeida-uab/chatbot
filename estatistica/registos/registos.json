@@ -5,5 +5,19 @@
         "nome": "Ana",
         "comando": "ajuda",
         "secao": "competencias"
+    },
+    {
+        "data": "2025-04-18T23:07:27.172614",
+        "utilizador_id": "1",
+        "nome": "João",
+        "comando": "ajuda",
+        "secao": "ajuda"
+    },
+    {
+        "data": "2025-04-18T23:07:21.755772",
+        "utilizador_id": "1",
+        "nome": "João",
+        "comando": "ajuda",
+        "secao": "competencias"
     }
 ]
