@@ -2,7 +2,7 @@ import unittest
 import os
 import asyncio
 from model.dados_model import DadosModel
-from model.consulta_model import ConsultaModelck
+from model.consulta_model import ConsultaModel
 from utils.relatorio_exportador import (
     gerar_relatorio_md,
     gerar_pdf_a_partir_md,
