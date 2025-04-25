@@ -1,3 +1,4 @@
+# view/discord_view.py
 import discord
 from typing import Dict, List, Optional
 import json
@@ -36,12 +37,12 @@ class DiscordView:
         try:
             # Comandos relacionados à PUC (informações da disciplina)
             if command_name in ["uc", "competencias", "roteiro", "metodologia", "recursos",
-                                "calendario", "avaliacao", "exame", "ia", "estrutura", "cartao"]:
+                               "calendario", "avaliacao", "exame", "ia", "estrutura", "cartao"]:
                 content = self._read_puc_file(command_name)
                 await self._send_formatted_response(ctx, command_name, content)
 
             # Comandos administrativos
-            elif command_name in ["relatorio", "estatisticas", "historico"]:
+            elif command_name in ["relatorio", "estatisticas", "historico", "grafico_comandos", "grafico_seccoes"]:
                 if not await self._check_admin_permission(ctx):
                     await ctx.send("Este comando é restrito a administradores.")
                     return
@@ -53,8 +54,8 @@ class DiscordView:
                     *args
                 )
 
-                if isinstance(result, discord.File):
-                    await ctx.send(file=result)
+                if isinstance(result, str) and os.path.exists(result):
+                    await ctx.send(file=discord.File(result))
                 elif isinstance(result, str):
                     await ctx.send(result)
                 elif isinstance(result, dict):
@@ -111,7 +112,7 @@ class DiscordView:
             embed.description = f"Mostra informações sobre {command_name} da unidade curricular"
             embed.add_field(name="Uso", value=f"!{command_name}", inline=False)
 
-        elif command_name in ["relatorio", "estatisticas", "historico"]:
+        elif command_name in ["relatorio", "estatisticas", "historico", "grafico_comandos", "grafico_seccoes"]:
             embed.description = "Comando administrativo"
             if command_name == "historico":
                 embed.add_field(name="Uso", value="!historico @utilizador", inline=False)
@@ -160,7 +161,9 @@ class DiscordView:
                 value="\n".join([
                     "!relatorio - Gera relatório de uso",
                     "!estatisticas - Mostra estatísticas",
-                    "!historico @user - Histórico de um utilizador"
+                    "!historico @user - Histórico de um utilizador",
+                    "!grafico_comandos - Gráfico de comandos",
+                    "!grafico_seccoes - Gráfico de secções"
                 ]),
                 inline=False
             )
