@@ -5,6 +5,12 @@
         "admin_only": false,
         "created_at": "2024-04-14T00:00:00"
     },
+    "ajuda": {
+        "description": "Comando alternativo que mostra a lista de comandos disponíveis",
+        "usage": "!ajuda [comando]",
+        "admin_only": false,
+        "created_at": "2024-04-14T00:00:00"
+    },
     "uc": {
         "description": "Informações sobre a unidade curricular",
         "usage": "!uc",
@@ -72,8 +78,8 @@
         "created_at": "2024-04-14T00:00:00"
     },
     "relatorio": {
-        "description": "Gera um relatório das interações dos utilizadores",
-        "usage": "!relatorio [tipo]",
+        "description": "Gera um relatório completo das interações dos utilizadores",
+        "usage": "!relatorio",
         "admin_only": true,
         "created_at": "2024-04-14T00:00:00"
     },
@@ -86,6 +92,18 @@
     "historico": {
         "description": "Mostra o histórico de interações de um utilizador",
         "usage": "!historico @utilizador",
+        "admin_only": true,
+        "created_at": "2024-04-14T00:00:00"
+    },
+    "grafico_comandos": {
+        "description": "Gera um gráfico visual dos comandos mais utilizados",
+        "usage": "!grafico_comandos",
+        "admin_only": true,
+        "created_at": "2024-04-14T00:00:00"
+    },
+    "grafico_seccoes": {
+        "description": "Gera um gráfico visual das seções mais consultadas",
+        "usage": "!grafico_seccoes",
         "admin_only": true,
         "created_at": "2024-04-14T00:00:00"
     }

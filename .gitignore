@@ -12,6 +12,17 @@ include
 models/mock_models.py
 
 # Ficheiros não incluidos
-controller/teste*
-view/teste*
-model/teste*
+
+controller/teste_*
+view/teste_*
+model/teste_*
+
+# Generated files
+*.log
+*.png
+*.pdf
+*.html
+
+# Logs directory
+logs/
+*.log
