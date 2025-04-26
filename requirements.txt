@@ -12,7 +12,7 @@ weasyprint==65.1
 audioop-lts==0.2.1 # Substitui o audioop para compatibilidade com Python 3.12 e superior
 
 # Bibliotecas para testes
-locust==2.34.1 # para desempenho de carga
-pytest==7.4.0 # para testes
-pytest-mock==3.14.0
-pytest-asyncio==0.26.0
+#locust==2.34.1 # para desempenho de carga
+#pytest==7.4.0 # para testes
+#pytest-mock==3.14.0
+#pytest-asyncio==0.26.0
