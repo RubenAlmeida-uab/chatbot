@@ -1,5 +1,6 @@
 # Chatbot MVC com Bot do Discord
 
+
 Este é um chatbot Discord implementado usando o padrão MVC (Model-View-Controller).
 
 ## Estrutura do Projeto
@@ -15,6 +16,14 @@ Este é um chatbot Discord implementado usando o padrão MVC (Model-View-Control
 ├── dados/            # Dados do chatbot
 │   └── puc/         # Informações da UC
 └── logs/            # Logs do sistema
+=======
+![alt text](image.png)
+
+Instalar os requirements:
+
+```
+pip install -r requirements.txt
+
 ```
 
 ## Funcionalidades
@@ -54,6 +63,7 @@ O sistema de logs foi implementado para facilitar o debug e monitoramento do bot
 
 1. Crie um arquivo `.env` com seu token do Discord:
 ```
+
 DISCORD_TOKEN=seu_token_aqui
 ```
 
@@ -74,3 +84,6 @@ python bot.py
 - **Controller (Sofia)**: Implementação da camada de Controller, processamento de comandos
 - **View (Yuran)**: Interface Discord, comandos e apresentação
 - **Tester (Carlos)**: Testes funcionais e validação
+=======
+pip install -r requirements-testes.txt
+```
