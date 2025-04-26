@@ -6,6 +6,7 @@ from datetime import datetime
 from pathlib import Path
 from controller.bot_controller import BotController
 from utils.logger import bot_logger
+from utils.admin_checker import AdminChecker
 
 
 class DiscordView:
@@ -18,6 +19,7 @@ class DiscordView:
         self.bot = bot
         self.controller = BotController()  # Instância do controller
         self.data_dir = Path("dados/puc")
+        self.admin_checker = AdminChecker()
 
         # Registra esta view como listener para eventos do controller
         self.controller.adicionar_listener_estatisticas_acedidas(self._on_estatisticas_acedidas)
@@ -182,12 +184,17 @@ class DiscordView:
 
     async def _check_admin_permission(self, ctx) -> bool:
         """Verifica se o usuário tem permissões de administrador."""
-        is_admin = ctx.author.guild_permissions.administrator
-        if is_admin:
-            bot_logger.debug(f"Usuário {ctx.author.name} verificado como administrador")
+        is_discord_admin = ctx.author.guild_permissions.administrator
+        is_env_admin = self.admin_checker.is_admin(str(ctx.author.id))
+
+        if is_env_admin:
+            bot_logger.info(f"Usuário {ctx.author.name} (ID: {ctx.author.id}) autenticado como admin via .env")
+        elif is_discord_admin:
+            bot_logger.info(f"Usuário {ctx.author.name} (ID: {ctx.author.id}) autenticado como admin via Discord")
         else:
-            bot_logger.debug(f"Usuário {ctx.author.name} não tem permissões de administrador")
-        return is_admin
+            bot_logger.warning(f"Usuário {ctx.author.name} (ID: {ctx.author.id}) não tem permissões de administrador")
+
+        return is_discord_admin or is_env_admin
 
     async def _send_command_help(self, ctx, command_name: str) -> None:
         """Envia ajuda sobre um comando específico."""
