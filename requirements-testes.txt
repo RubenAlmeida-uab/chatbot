@@ -1,2 +1,0 @@
-locust==2.34.1 # para desempenho de carga
-pytest==7.4.0 # para testes
