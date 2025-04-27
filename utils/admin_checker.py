@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from chatbot.utils.logger import bot_logger
+from utils.logger import bot_logger
 from discord.ext import commands
 
 class AdminChecker:

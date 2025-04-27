@@ -1,9 +1,9 @@
 import discord
 from pathlib import Path
-from chatbot.controller.bot_controller import BotController
-from chatbot.utils.logger import bot_logger
-from chatbot.utils.admin_checker import AdminChecker
-from chatbot.model.consulta_model import ConsultaModel
+from controller.bot_controller import BotController
+from utils.logger import bot_logger
+from utils.admin_checker import AdminChecker
+from model.consulta_model import ConsultaModel
 
 
 

@@ -1,5 +1,5 @@
-from chatbot.model.dados_model import DadosModel
-from chatbot.model.consulta_model import ConsultaModel
+from model.dados_model import DadosModel
+from model.consulta_model import ConsultaModel
 
 
 class UserController:

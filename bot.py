@@ -1,9 +1,9 @@
-from chatbot.utils.admin_checker import is_env_admin
+from utils.admin_checker import is_env_admin
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands
-from chatbot.view.discord_view import DiscordView
-from chatbot.utils.logger import bot_logger
+from view.discord_view import DiscordView
+from utils.logger import bot_logger
 import sys
 import os
 

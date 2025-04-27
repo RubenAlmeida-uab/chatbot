@@ -1,7 +1,7 @@
 import io
 import os
 from datetime import datetime
-from chatbot.model.consulta_model import ConsultaModel
+from model.consulta_model import ConsultaModel
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
