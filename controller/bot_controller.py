@@ -172,6 +172,10 @@ class BotController:
                 f"Utilizadores únicos: {estatisticas['utilizadores_unicos']}\n\n",
                 "## Comandos mais populares\n"
             ]
+
+            # Define o caminho correto para o diretório de relatórios
+            pasta_relatorios = "estatistica/relatorios"
+            os.makedirs(pasta_relatorios, exist_ok=True)
             
             for comando, contagem in estatisticas['comandos_populares']:
                 conteudo.append(f"- {comando}: {contagem} consultas\n")
@@ -185,7 +189,7 @@ class BotController:
                 conteudo.append(f"- {nome} (ID: {utilizador_id}): {contagem} consultas\n")
             
             # Cria um ficheiro temporário com o relatório
-            filename = f"relatorio_bot_lds_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"#pode ser tb txt
+            filename = f"{pasta_relatorios}/relatorio_bot_lds_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"#pode ser tb txt
             with open(filename, 'w', encoding='utf-8') as f:
                 f.writelines(conteudo)
             
