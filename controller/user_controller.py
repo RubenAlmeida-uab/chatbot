@@ -1,6 +1,7 @@
 from model.dados_model import DadosModel
 from model.consulta_model import ConsultaModel
 
+
 class UserController:
     """
     Controlador para gerir as interações dos utilizadores com o chatbot.    

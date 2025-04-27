@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from utils.logger import bot_logger
+from discord.ext import commands
 
 class AdminChecker:
     _instance = None
@@ -29,3 +30,10 @@ class AdminChecker:
     def is_admin(self, user_id: str) -> bool:
         """Verifica se um usuário é admin pelo ID"""
         return str(user_id) in self._admin_ids
+
+# Decorador para usar nos comandos
+def is_env_admin():
+    def predicate(ctx):
+        checker = AdminChecker()
+        return checker.is_admin(ctx.author.id)
+    return commands.check(predicate)

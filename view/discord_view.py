@@ -1,12 +1,10 @@
 import discord
-from typing import Dict, List, Optional
-import json
-import os
-from datetime import datetime
 from pathlib import Path
 from controller.bot_controller import BotController
 from utils.logger import bot_logger
 from utils.admin_checker import AdminChecker
+from model.consulta_model import ConsultaModel
+
 
 
 class DiscordView:
@@ -17,18 +15,18 @@ class DiscordView:
 
     def __init__(self, bot):
         self.bot = bot
-        self.controller = BotController()  # Instância do controller
+        self.controller = BotController()
         self.data_dir = Path("dados/puc")
         self.admin_checker = AdminChecker()
+        self.consulta_model = ConsultaModel()  # <-- ESTA LINHA É ESSENCIAL!!
 
-        # Registra esta view como listener para eventos do controller
+        # Registra listeners do controller
         self.controller.adicionar_listener_estatisticas_acedidas(self._on_estatisticas_acedidas)
         self.controller.adicionar_listener_relatorio_gerado(self._on_relatorio_gerado)
         self.controller.adicionar_listener_grafico_gerado(self._on_grafico_gerado)
         self.controller.adicionar_listener_erro(self._on_erro)
 
         bot_logger.info("DiscordView inicializada com sucesso")
-
     async def process_command(self, ctx, command_name: str, *args) -> None:
         """
         Processa um comando recebido do Discord e envia para o controller apropriado.
@@ -47,6 +45,14 @@ class DiscordView:
                 content = self._read_puc_file(command_name)
                 await self._send_formatted_response(ctx, command_name, content)
                 bot_logger.debug(f"Comando PUC {command_name} processado com sucesso")
+
+                # ⚡ AQUI: registar a consulta!
+                self.consulta_model.registar_consulta(
+                    str(ctx.author.id),
+                    ctx.author.name,
+                    command_name,
+                    command_name  # ou None se não quiseres associar seção
+                )
 
             # Comandos administrativos
             elif command_name in ["relatorio", "estatisticas", "historico", "grafico_comandos", "grafico_seccoes"]:

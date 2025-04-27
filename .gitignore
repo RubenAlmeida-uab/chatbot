@@ -22,6 +22,7 @@ model/teste_*
 *.png
 *.pdf
 *.html
+*.pyc
 
 # Logs directory
 logs/

@@ -60,9 +60,14 @@ class ConsultaModel:
             json.dump(estatisticas, f, indent=4, ensure_ascii=False)
         print(f"✅ Estatísticas exportadas para: {caminho}")
 
+    def obter_historico_utilizador(self, utilizador_id):
+        """Retorna o histórico de consultas feitas por um utilizador específico."""
+        return [consulta for consulta in self.registos if consulta["utilizador_id"] == utilizador_id]
 
+# Teste manual
 if __name__ == "__main__":
     consulta_model = ConsultaModel()
     consulta_model.registar_consulta("1", "João", "ajuda", "competencias")
     estatisticas = consulta_model.obter_estatisticas()
     print(estatisticas)
+
