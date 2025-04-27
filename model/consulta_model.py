@@ -51,7 +51,7 @@ class ConsultaModel:
     def exportar_json(self, caminho=None):
         if not caminho:
             data_hoje = datetime.now().strftime("%Y%m%d")
-            caminho = f"estatistica/relatorios/estatisticas_{data_hoje}.json"
+            caminho = f"estatistica/estatisticas/estatisticas_{data_hoje}.json"
 
         os.makedirs(os.path.dirname(caminho), exist_ok=True)
         with open(caminho, "w", encoding="utf-8") as f:
