@@ -1,9 +1,0 @@
-# Competências
-
-Esta unidade curricular visa desenvolver as seguintes competências:
-- Trabalho colaborativo em equipa
-- Aplicação de metodologias ágeis
-- Comunicação eficaz em ambientes digitais
-
-Q: O que vou aprender?
-A: A trabalhar com metodologias ágeis e desenvolver software em equipa.
