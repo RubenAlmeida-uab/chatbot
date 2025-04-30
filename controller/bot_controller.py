@@ -1,11 +1,11 @@
 import io
 import os
 from datetime import datetime
-from model.consulta_model import ConsultaModel
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import discord
+from model.consulta_model import ConsultaModel
 
 
 class BotController:
@@ -116,7 +116,7 @@ class BotController:
             if comando == "estatisticas":
                 estatisticas = self.obter_estatisticas(admin_id)
                 self._notificar_estatisticas_acedidas(admin_id, estatisticas)
-                return estatisticas
+                return self._formatar_estatisticas_para_discord(estatisticas)
             elif comando == "relatorio":
                 ficheiro = await self.gerar_relatorio(admin_id)
                 return ficheiro
@@ -126,14 +126,14 @@ class BotController:
             elif comando == "grafico_seccoes":
                 ficheiro = await self.gerar_grafico_seccoes(admin_id)
                 return ficheiro
-            elif comando == "historico_utilizador" and len(args) > 0:
+            elif comando == "historico" and len(args) > 0:
                 utilizador_id = args[0]
                 historico = self.obter_utilizador_historico(utilizador_id, admin_id)
                 return historico
             elif comando == "ajuda":
-                # Aqui adiciona a resposta esperada para o comando ajuda
-                return "Comandos disponíveis: estatisticas, relatorio, grafico_comandos, grafico_seccoes, historico_utilizador"
+                return "Comandos disponíveis: estatisticas, relatorio, grafico_comandos, grafico_seccoes, historico"
             else:
+                self._notificar_erro(admin_id, comando, f"Comando não reconhecido: {comando}")
                 return None  # Comando não reconhecido
         except Exception as e:
             self._notificar_erro(admin_id, comando, str(e))
@@ -141,7 +141,7 @@ class BotController:
     
     def obter_estatisticas(self, admin_id=None):
         """
-        Obtém estatísticas de uso do bot.        .
+        Obtém estatísticas de uso do bot.        
         """
         try:
             estatisticas = self.consulta_model.obter_estatisticas()
@@ -156,6 +156,57 @@ class BotController:
                 self._notificar_erro(admin_id, "obter_estatisticas", str(e))
             raise
     
+    def _formatar_data(self, data_str):
+        """
+        Formata uma string de data ISO para um formato legível.
+        Método auxiliar para evitar repetição de código.
+        """
+        if not data_str:
+            return ""
+            
+        try:
+            data_obj = datetime.fromisoformat(data_str)
+            return data_obj.strftime('%d/%m/%Y %H:%M:%S')
+        except (ValueError, TypeError):
+            return data_str
+    
+    def _formatar_estatisticas_para_discord(self, estatisticas):
+        """
+        Formata as estatísticas para apresentação na interface Discord.
+        """
+        # Formata datas usando o método auxiliar
+        primeiro_acesso = self._formatar_data(estatisticas.get('primeiro_acesso', ''))
+        ultimo_acesso = self._formatar_data(estatisticas.get('ultimo_acesso', ''))
+        
+        resultado = {
+            "titulo": "Estatísticas do Bot",
+            "descricao": "Resumo de uso do bot", 
+            "seccoes": [
+                {
+                    "titulo": "Informações Gerais",
+                    "itens": [
+                        f"Total de consultas: {estatisticas['total_consultas']}",
+                        f"Utilizadores únicos: {estatisticas['utilizadores_unicos']}",
+                        f"Primeiro acesso: {primeiro_acesso}",
+                        f"Último acesso: {ultimo_acesso}"
+                    ]
+                },
+                {
+                    "titulo": "Top 5 Comandos",
+                    "itens": [f"{cmd}: {count} vezes" for cmd, count in estatisticas['comandos_populares'][:5]] or ["Nenhum comando registrado"]
+                },
+                {
+                    "titulo": "Top 5 Seções",
+                    "itens": [f"{secao}: {count} vezes" for secao, count in estatisticas['seccoes_populares'][:5]] or ["Nenhuma seção registrada"]
+                },
+                {
+                    "titulo": "Top 5 Utilizadores",
+                    "itens": [f"{nome} (ID: {uid}): {count} consultas" for uid, nome, count in estatisticas['utilizadores_ativos'][:5]] or ["Nenhum usuário registrado"]
+                }
+            ]
+        }
+        return resultado
+    
     async def gerar_relatorio(self, admin_id=None):
         """
         Gera um relatório com estatísticas de uso do bot.        
@@ -163,29 +214,49 @@ class BotController:
         try:
             estatisticas = self.obter_estatisticas()
             
+            # Formata as datas usando o método auxiliar
+            primeiro_acesso = self._formatar_data(estatisticas.get('primeiro_acesso', ''))
+            ultimo_acesso = self._formatar_data(estatisticas.get('ultimo_acesso', ''))
+            
             # Cria o conteúdo do relatório
             conteudo = [
                 "# Relatório de Uso do Bot LDS\n",
                 f"Data de geração: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n",
-                f"Período: {estatisticas['primeiro_acesso']} até {estatisticas['ultimo_acesso']}\n\n",
+                f"Período: {primeiro_acesso} até {ultimo_acesso}\n\n",
                 f"Total de consultas: {estatisticas['total_consultas']}\n",
                 f"Utilizadores únicos: {estatisticas['utilizadores_unicos']}\n\n",
                 "## Comandos mais populares\n"
             ]
             
-            for comando, contagem in estatisticas['comandos_populares']:
-                conteudo.append(f"- {comando}: {contagem} consultas\n")
+            # Adiciona comandos populares
+            if estatisticas['comandos_populares']:
+                for comando, contagem in estatisticas['comandos_populares']:
+                    conteudo.append(f"- {comando}: {contagem} consultas\n")
+            else:
+                conteudo.append("- Nenhum comando registrado\n")
             
+            # Adiciona secções populares
             conteudo.append("\n## Secções mais consultadas\n")
-            for seccao, contagem in estatisticas['seccoes_populares']:
-                conteudo.append(f"- {seccao}: {contagem} consultas\n")
+            if estatisticas['seccoes_populares']:
+                for seccao, contagem in estatisticas['seccoes_populares']:
+                    conteudo.append(f"- {seccao}: {contagem} consultas\n")
+            else:
+                conteudo.append("- Nenhuma secção registrada\n")
             
+            # Adiciona utilizadores ativos
             conteudo.append("\n## Utilizadores mais ativos\n")
-            for utilizador_id, nome, contagem in estatisticas['utilizadores_ativos']:
-                conteudo.append(f"- {nome} (ID: {utilizador_id}): {contagem} consultas\n")
+            if estatisticas['utilizadores_ativos']:
+                for utilizador_id, nome, contagem in estatisticas['utilizadores_ativos']:
+                    conteudo.append(f"- {nome} (ID: {utilizador_id}): {contagem} consultas\n")
+            else:
+                conteudo.append("- Nenhum utilizador registrado\n")
             
             # Cria um ficheiro temporário com o relatório
-            filename = f"relatorio_bot_lds_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"#pode ser tb txt
+            filename = f"relatorio_bot_lds_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"  # pode ser tb txt
+            
+            # Garante que o diretório exista
+            os.makedirs(os.path.dirname(filename) if os.path.dirname(filename) else '.', exist_ok=True)
+            
             with open(filename, 'w', encoding='utf-8') as f:
                 f.writelines(conteudo)
             
@@ -206,6 +277,27 @@ class BotController:
         """
         try:
             estatisticas = self.obter_estatisticas()
+            
+            # Verifica se há dados para gerar o gráfico
+            if not estatisticas['comandos_populares']:
+                # Cria um gráfico vazio com mensagem
+                fig = Figure(figsize=(10, 6))
+                ax = fig.add_subplot(111)
+                ax.text(0.5, 0.5, "Sem dados suficientes para gerar o gráfico", 
+                        horizontalalignment='center', verticalalignment='center',
+                        transform=ax.transAxes, fontsize=14)
+                ax.set_axis_off()
+                
+                # Salva o gráfico
+                filename = f"grafico_comandos_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+                fig.savefig(filename)
+                
+                if admin_id:
+                    self._notificar_grafico_gerado(admin_id, "grafico_comandos", filename)
+                
+                return discord.File(filename)
+            
+            # Extrai dados para o gráfico
             comandos, contagens = zip(*estatisticas['comandos_populares']) if estatisticas['comandos_populares'] else ([], [])
             
             # Cria a figura
@@ -218,16 +310,11 @@ class BotController:
             ax.set_ylabel('Número de consultas')
             ax.set_title('Comandos mais populares')
             plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
+            fig.tight_layout()
             
-            # Guarda a figura num buffer de bytes
-            buf = io.BytesIO()
-            FigureCanvas(fig).print_png(buf)
-            buf.seek(0)
-            
-            # Cria um ficheiro temporário com o gráfico
+            # Guarda o gráfico como imagem
             filename = f"grafico_comandos_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
-            with open(filename, 'wb') as f:
-                f.write(buf.getbuffer())
+            fig.savefig(filename)
             
             # Notifica os listeners se admin_id for fornecido
             if admin_id:
@@ -246,8 +333,30 @@ class BotController:
         """
         try:
             estatisticas = self.obter_estatisticas()
+            
+            # Verifica se há dados para gerar o gráfico
+            if not estatisticas['seccoes_populares']:
+                # Cria um gráfico vazio com mensagem
+                fig = Figure(figsize=(10, 6))
+                ax = fig.add_subplot(111)
+                ax.text(0.5, 0.5, "Sem dados suficientes para gerar o gráfico", 
+                        horizontalalignment='center', verticalalignment='center',
+                        transform=ax.transAxes, fontsize=14)
+                ax.set_axis_off()
+                
+                # Salva o gráfico
+                filename = f"grafico_seccoes_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+                fig.savefig(filename)
+                
+                if admin_id:
+                    self._notificar_grafico_gerado(admin_id, "grafico_seccoes", filename)
+                
+                return discord.File(filename)
+            
+            # Extrai dados para o gráfico
             seccoes, contagens = zip(*estatisticas['seccoes_populares']) if estatisticas['seccoes_populares'] else ([], [])            
             
+            # Cria a figura e o gráfico
             fig = Figure(figsize=(10, 6))
             ax = fig.add_subplot(111)            
             
@@ -256,14 +365,11 @@ class BotController:
             ax.set_ylabel('Número de consultas')
             ax.set_title('Secções mais consultadas')
             plt.setp(ax.get_xticklabels(), rotation=45, ha='right')            
+            fig.tight_layout()
             
-            buf = io.BytesIO()
-            FigureCanvas(fig).print_png(buf)
-            buf.seek(0)            
-           
+            # Salva o gráfico como imagem
             filename = f"grafico_seccoes_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
-            with open(filename, 'wb') as f:
-                f.write(buf.getbuffer())            
+            fig.savefig(filename)            
             
             if admin_id:
                 self._notificar_grafico_gerado(admin_id, "grafico_seccoes", filename)
@@ -274,7 +380,7 @@ class BotController:
             if admin_id:
                 self._notificar_erro(admin_id, "gerar_grafico_seccoes", str(e))
             raise
-    
+
     def obter_utilizador_historico(self, utilizador_id, admin_id=None):
         """
         Obtém o histórico de consultas de um utilizador específico.        .
@@ -290,3 +396,4 @@ class BotController:
             if admin_id:
                 self._notificar_erro(admin_id, "obter_historico", str(e))
             raise
+    
