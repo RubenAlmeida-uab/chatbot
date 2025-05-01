@@ -8,6 +8,7 @@ import discord
 from model.consulta_model import ConsultaModel
 
 
+
 class BotController:
     """
     Controlador para gerir as funções administrativas do bot.    
@@ -156,10 +157,14 @@ class BotController:
                 self._notificar_erro(admin_id, "obter_estatisticas", str(e))
             raise
     
+    #este método que deve ser usado na view mas tb é usado para gerar os relatórios
+    #deverá ser passado para utils
     def _formatar_data(self, data_str):
         """
         Formata uma string de data ISO para um formato legível.
-        Método auxiliar para evitar repetição de código.
+        NOTA: Idealmente, esta funcionalidade deveria estar na View,
+        mas será mantida aqui para suportar os métodos de geração de relatórios.
+        ou passar para utils
         """
         if not data_str:
             return ""
@@ -170,6 +175,7 @@ class BotController:
         except (ValueError, TypeError):
             return data_str
     
+    #metodo de formatação que deverá ser feita na view
     def _formatar_estatisticas_para_discord(self, estatisticas):
         """
         Formata as estatísticas para apresentação na interface Discord.
@@ -397,3 +403,4 @@ class BotController:
                 self._notificar_erro(admin_id, "obter_historico", str(e))
             raise
     
+           
