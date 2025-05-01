@@ -205,6 +205,7 @@ class UserController:
             # Retorna mensagem de erro genérica
             return "Ocorreu um erro ao processar o seu comando. Por favor, tente novamente mais tarde."
     
+    #formatação de resposta que deverá ser feita na view
     def _formatar_resposta(self, seccao, dados):
         """
         Formata a resposta com base na secção e nos dados obtidos.        
@@ -223,59 +224,5 @@ class UserController:
         
         return resposta
     
-    def _obter_puc_geral(self):
-        """
-        Retorna uma visão geral do PUC.
-        """
-        self.logger.debug("Obtendo visão geral do PUC")
-        puc_geral = """
-# 📚 Plano da Unidade Curricular (PUC) 📚
-
-Este é o plano geral da unidade curricular de Laboratório de Desenvolvimento de Software.
-
-## Descrição Geral
-LDS é uma unidade curricular focada na aplicação prática de conceitos de engenharia de software em projetos reais.
-
-## Tópicos Principais
-- Desenvolvimento de software em equipa
-- Metodologias ágeis
-- Gestão de projetos de software
-- Práticas de codificação e teste
-- Integração e entrega contínua
-
-Para informações específicas, consulte as secções com `!listar_seccoes` ou peça ajuda com `!ajuda`.
-        """
-        return puc_geral
-    
-    def _obter_ajuda(self):
-        """
-        Retorna a mensagem de ajuda com os comandos disponíveis.        
-        """
-        self.logger.debug("Obtendo mensagem de ajuda")
-        ajuda = """
-# 📚 Bot LDS - Comandos Disponíveis 📚
-
-## Informações Gerais
-`!puc` - Visão geral do Plano da Unidade Curricular
-`!unidade_curricular` - Descrição detalhada da disciplina
-`!listar_seccoes` - Lista todas as secções disponíveis para consulta
-
-## Conteúdo Académico
-`!competencias` - Competências a desenvolver na disciplina
-`!roteiro` - Roteiro completo do conteúdo a trabalhar
-`!metodologia` - Métodos de trabalho e aprendizagem
-
-## Organização da Disciplina
-`!estrutura` - Como formar e organizar as equipas da SimProgramming
-`!recursos` - Bibliografia e outros recursos recomendados
-`!ia` - Diretrizes para utilização de ferramentas de inteligência artificial
-
-## Avaliação
-`!avaliacao` - Informações gerais sobre o processo de avaliação
-`!cartao` - Detalhes sobre o Cartão de Aprendizagem
-`!calendario` - Calendário completo de avaliação contínua
-`!exame` - Informações sobre o exame final
-
-Digite o comando para obter informações detalhadas sobre o tópico!
-        """
-        return ajuda
+ 
+     
