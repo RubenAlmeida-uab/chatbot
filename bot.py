@@ -1,10 +1,11 @@
-import os
+from utils.admin_checker import is_env_admin
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands
 from view.discord_view import DiscordView
 from utils.logger import bot_logger
 import sys
+import os
 
 # Configuração inicial do logger
 bot_logger.info("Iniciando configuração do bot...")
@@ -145,41 +146,63 @@ async def verificaradmin(ctx):
     bot_logger.info(f"Verificação de admin realizada para {ctx.author.name} (ID: {ctx.author.id})")
 
 
-# Comandos administrativos
+#C omandos administrativos usando o decorador personalizado
 @bot.command()
-@commands.has_permissions(administrator=True)
+@is_env_admin()
 async def relatorio(ctx):
     """Gera um relatório completo de uso do bot"""
     await view.process_command(ctx, "relatorio")
 
 
 @bot.command()
-@commands.has_permissions(administrator=True)
+@is_env_admin()
 async def estatisticas(ctx):
     """Mostra estatísticas de uso do bot"""
     await view.process_command(ctx, "estatisticas")
 
 
 @bot.command()
-@commands.has_permissions(administrator=True)
+@is_env_admin()
 async def historico(ctx, user: discord.Member):
-    """Mostra o histórico de comandos de um usuário específico"""
-    await view.process_command(ctx, "historico", user.id)
+    """Mostra o histórico de comandos de um usuário específico."""
+    historico = view.consulta_model.obter_historico_utilizador(str(user.id))
+
+    if not historico:
+        await ctx.send(f"❌ Nenhum histórico encontrado para o usuário {user.name}.")
+        return
+
+    embed = discord.Embed(
+        title=f"Histórico de Comandos de {user.name}",
+        description=f"Total de consultas: **{len(historico)}**",
+        color=discord.Color.green()
+    )
+
+    for consulta in historico[-10:]:  # Mostra os últimos 10 registros
+        data = consulta["data"].split("T")[0]  # Só pega a data sem hora
+        comando = consulta["comando"]
+        secao = consulta["secao"] if consulta["secao"] else "Nenhuma seção"
+        embed.add_field(
+            name=f"{data} - {comando}",
+            value=f"Seção: {secao}",
+            inline=False
+        )
+
+    await ctx.send(embed=embed)
+
 
 
 @bot.command()
-@commands.has_permissions(administrator=True)
+@is_env_admin()
 async def grafico_comandos(ctx):
     """Gera um gráfico dos comandos mais utilizados"""
     await view.process_command(ctx, "grafico_comandos")
 
 
 @bot.command()
-@commands.has_permissions(administrator=True)
+@is_env_admin()
 async def grafico_seccoes(ctx):
     """Gera um gráfico das seções mais consultadas"""
     await view.process_command(ctx, "grafico_seccoes")
-
 
 # Comandos de ajuda
 @bot.command()
@@ -211,12 +234,11 @@ async def help(ctx, command_name=None):
 @grafico_comandos.error
 @grafico_seccoes.error
 async def admin_command_error(ctx, error):
-    if isinstance(error, commands.MissingPermissions):
+    if isinstance(error, commands.CheckFailure):
         bot_logger.warning(f"Tentativa de acesso não autorizado ao comando admin por {ctx.author.name}")
-        await ctx.send("Você precisa ter permissões de administrador para usar este comando.")
+        await ctx.send("❌ Apenas administradores registados podem usar este comando.")
     else:
         await on_command_error(ctx, error)
-
 
 try:
     bot_logger.info("Iniciando conexão com o Discord...")

@@ -23,6 +23,7 @@ estatistica/*
 *.png
 *.pdf
 *.html
+*.pyc
 
 # Logs directory
 logs/

@@ -173,14 +173,17 @@ class BotController:
                 "## Comandos mais populares\n"
             ]
 
+            # Define o caminho correto para o diretório de relatórios
+            pasta_relatorios = "estatistica/relatorios"
+            os.makedirs(pasta_relatorios, exist_ok=True)
+
             # Adiciona comandos populares
             if estatisticas['comandos_populares']:
                 for comando, contagem in estatisticas['comandos_populares']:
                     conteudo.append(f"- {comando}: {contagem} consultas\n")
             else:
                 conteudo.append("- Nenhum comando registrado\n")
-
-            # Adiciona secções populares
+           
             conteudo.append("\n## Secções mais consultadas\n")
             if estatisticas['seccoes_populares']:
                 for seccao, contagem in estatisticas['seccoes_populares']:
@@ -197,11 +200,7 @@ class BotController:
                 conteudo.append("- Nenhum utilizador registrado\n")
 
             # Cria um ficheiro temporário com o relatório
-            filename = f"relatorio_bot_lds_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"  # pode ser tb txt
-
-            # Garante que o diretório exista
-            os.makedirs(os.path.dirname(filename) if os.path.dirname(filename) else '.', exist_ok=True)
-
+            filename = f"{pasta_relatorios}/relatorio_bot_lds_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"#pode ser tb txt
             with open(filename, 'w', encoding='utf-8') as f:
                 f.writelines(conteudo)
 
