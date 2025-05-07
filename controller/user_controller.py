@@ -5,44 +5,47 @@ from model.consulta_model import ConsultaModel
 
 class UserController:
     """
-    Controlador para gerir as interações dos utilizadores com o chatbot.    
+    Controlador para gerir as interações dos utilizadores com o chatbot.
     """
-    
+
     def __init__(self):
         """
         Inicializa o controlador com os modelos necessários e configura eventos.
         """
         self.dados_model = DadosModel()
         self.consulta_model = ConsultaModel()
-        
+
         # Listeners para eventos do controlador
         self.listeners_comando_processado = []  # Eventos para quando um comando é processado
-        self.listeners_seccao_acedida = []     # Eventos para quando uma secção é acedida
-        self.listeners_erro = []               # Eventos para quando ocorre um erro
-    
+        self.listeners_seccao_acedida = []  # Eventos para quando uma secção é acedida
+        self.listeners_erro = []  # Eventos para quando ocorre um erro
+
     # === Métodos para gerir eventos ===
-    
+
     def adicionar_listener_comando_processado(self, listener):
         """
-        Adiciona um listener para eventos de processamento de comandos.        
+        Adiciona um listener para eventos de processamento de comandos.
         """
         self.listeners_comando_processado.append(listener)
-        self.logger.debug(f"Listener adicionado para comando processado: {listener.__name__ if hasattr(listener, '__name__') else 'anônimo'}")
-    
+        self.logger.debug(
+            f"Listener adicionado para comando processado: {listener.__name__ if hasattr(listener, '__name__') else 'anônimo'}")
+
     def adicionar_listener_seccao_acedida(self, listener):
         """
-        Adiciona um listener para eventos de acesso a secções.        
+        Adiciona um listener para eventos de acesso a secções.
         """
         self.listeners_seccao_acedida.append(listener)
-        self.logger.debug(f"Listener adicionado para secção acedida: {listener.__name__ if hasattr(listener, '__name__') else 'anônimo'}")
-    
+        self.logger.debug(
+            f"Listener adicionado para secção acedida: {listener.__name__ if hasattr(listener, '__name__') else 'anônimo'}")
+
     def adicionar_listener_erro(self, listener):
         """
-        Adiciona um listener para eventos de erro.        
+        Adiciona um listener para eventos de erro.
         """
         self.listeners_erro.append(listener)
-        self.logger.debug(f"Listener adicionado para erro: {listener.__name__ if hasattr(listener, '__name__') else 'anônimo'}")
-    
+        self.logger.debug(
+            f"Listener adicionado para erro: {listener.__name__ if hasattr(listener, '__name__') else 'anônimo'}")
+
     def remover_listener(self, listener):
         """
         Remove um listener de todas as listas de eventos.
@@ -57,30 +60,31 @@ class UserController:
         if listener in self.listeners_erro:
             self.listeners_erro.remove(listener)
             removed = True
-        
+
         if removed:
             self.logger.debug(f"Listener removido: {listener.__name__ if hasattr(listener, '__name__') else 'anônimo'}")
-    
+
     # === Métodos para emitir eventos ===
-    
+
     def _notificar_comando_processado(self, utilizador_id, utilizador_nome, comando, seccao, sucesso):
         """
-        Notifica todos os listeners de processamento de comandos.        
+        Notifica todos os listeners de processamento de comandos.
         """
         if sucesso:
             self.logger.info(f"Comando '{comando}' processado com sucesso para {utilizador_nome} (ID: {utilizador_id})")
         else:
-            self.logger.warning(f"Comando '{comando}' processado com falha para {utilizador_nome} (ID: {utilizador_id})")
-            
+            self.logger.warning(
+                f"Comando '{comando}' processado com falha para {utilizador_nome} (ID: {utilizador_id})")
+
         for listener in self.listeners_comando_processado:
             try:
                 listener(utilizador_id, utilizador_nome, comando, seccao, sucesso)
             except Exception as e:
                 self.logger.error(f"Erro ao notificar listener de comando processado: {e}")
-    
+
     def _notificar_seccao_acedida(self, utilizador_id, seccao, dados):
         """
-        Notifica todos os listeners de acesso a secções.        
+        Notifica todos os listeners de acesso a secções.
         """
         self.logger.info(f"Secção '{seccao}' acedida pelo utilizador {utilizador_id}")
         for listener in self.listeners_seccao_acedida:
@@ -88,45 +92,45 @@ class UserController:
                 listener(utilizador_id, seccao, dados)
             except Exception as e:
                 self.logger.error(f"Erro ao notificar listener de secção acedida: {e}")
-    
+
     def _notificar_erro(self, utilizador_id, comando, seccao, mensagem_erro):
         """
-        Notifica todos os listeners de erro.        
+        Notifica todos os listeners de erro.
         """
         self.logger.error(f"Erro ao processar comando '{comando}' para utilizador {utilizador_id}: {mensagem_erro}")
         for listener in self.listeners_erro:
             try:
                 listener(utilizador_id, comando, seccao, mensagem_erro)
             except Exception as e:
-                self.logger.critical(f"Erro ao notificar listener de erro: {e}")    
-        
+                self.logger.critical(f"Erro ao notificar listener de erro: {e}")
+
     def processar_comando(self, utilizador_id, utilizador_nome, comando, seccao=None):
         """
-        Processa um comando recebido pela View.        
+        Processa um comando recebido pela View.
         """
         self.logger.info(f"Recebido comando '{comando}' de {utilizador_nome} (ID: {utilizador_id})")
-        
+
         # Lista de comandos válidos que este controlador pode processar
-        comandos_validos = ["puc", "ajuda", "listar_seccoes", "unidade_curricular", 
-                           "competencias", "roteiro", "metodologia", "recursos",
-                           "calendario", "avaliacao", "exame", "ia", "estrutura", "cartao"]
-        
+        comandos_validos = ["puc", "ajuda", "listar_seccoes", "unidade_curricular",
+                            "competencias", "roteiro", "metodologia", "recursos",
+                            "calendario", "avaliacao", "exame", "ia", "estrutura", "cartao"]
+
         if comando in comandos_validos:
             # IMPORTANTE: Registra a consulta no modelo primeiro, independentemente do resultado
             # Este é o ponto crítico para garantir que as estatísticas sejam registradas
             self.logger.debug(f"Registrando consulta para comando '{comando}' de {utilizador_nome}")
             self.consulta_model.registar_consulta(utilizador_id, utilizador_nome, comando, seccao)
-            
+
             # Processa o comando e obtém a resposta
             resposta = self.obter_resposta(utilizador_id, utilizador_nome, comando, seccao)
             return resposta
         else:
             self.logger.debug(f"Comando '{comando}' não é processado por este controlador")
             return None  # Indica que este controlador não processou o comando
-    
+
     def obter_resposta(self, utilizador_id, utilizador_nome, comando, seccao=None):
         """
-        Obtém uma resposta para o comando do utilizador.        
+        Obtém uma resposta para o comando do utilizador.
         """
         try:
             # Processa o comando e obtém a resposta
@@ -136,49 +140,49 @@ class UserController:
                 if dados_seccao:
                     # Notifica listeners que uma secção foi acedida com sucesso
                     self._notificar_seccao_acedida(utilizador_id, seccao, dados_seccao)
-                    
+
                     # Notifica que o comando foi processado com sucesso
                     self._notificar_comando_processado(utilizador_id, utilizador_nome, comando, seccao, True)
-                    
-                    return self._formatar_resposta(seccao, dados_seccao)
+
+                    return dados_seccao
                 else:
                     # Notifica erro - secção não encontrada
                     erro_msg = f"Secção '{seccao}' não encontrada"
                     self.logger.warning(erro_msg)
                     self._notificar_erro(utilizador_id, comando, seccao, erro_msg)
-                    
+
                     # Notifica que o comando foi processado mas com falha
                     self._notificar_comando_processado(utilizador_id, utilizador_nome, comando, seccao, False)
-                    
+
                     return f"Desculpe, não encontrei informações sobre '{seccao}' no PUC."
             else:
                 # Comando para listar todas as secções
                 if comando == "listar_seccoes":
                     self.logger.debug("Listando todas as secções disponíveis")
                     seccoes = self.dados_model.obter_todas_seccoes()
-                    
+
                     # Notifica que o comando foi processado com sucesso
                     self._notificar_comando_processado(utilizador_id, utilizador_nome, comando, None, True)
-                    
+
                     return "**Secções disponíveis no PUC:**\n" + "\n".join([f"- {seccao}" for seccao in seccoes])
                 # Comando de ajuda
                 elif comando == "ajuda":
                     self.logger.debug("Fornecendo mensagem de ajuda")
                     # Notifica que o comando foi processado com sucesso
                     self._notificar_comando_processado(utilizador_id, utilizador_nome, comando, None, True)
-                    
+
                     return self._obter_ajuda()
                 # Comando PUC
                 elif comando == "puc":
                     self.logger.debug("Fornecendo visão geral do PUC")
                     # Notifica que o comando foi processado com sucesso
                     self._notificar_comando_processado(utilizador_id, utilizador_nome, comando, None, True)
-                    
+
                     return self._obter_puc_geral()
                 # Outros comandos específicos sem secção
-                elif comando in ["unidade_curricular", "competencias", "roteiro", "metodologia", 
-                               "recursos", "avaliacao", "calendario", "exame", "ia", 
-                               "estrutura", "cartao"]:
+                elif comando in ["unidade_curricular", "competencias", "roteiro", "metodologia",
+                                 "recursos", "avaliacao", "calendario", "exame", "ia",
+                                 "estrutura", "cartao"]:
                     self.logger.debug(f"Tratando comando '{comando}' como secção")
                     # Trata o comando como se fosse uma secção
                     return self.obter_resposta(utilizador_id, utilizador_nome, "puc", comando)
@@ -188,41 +192,48 @@ class UserController:
                     erro_msg = f"Comando '{comando}' não reconhecido"
                     self.logger.warning(erro_msg)
                     self._notificar_erro(utilizador_id, comando, None, erro_msg)
-                    
+
                     # Notifica que o comando foi processado mas com falha
                     self._notificar_comando_processado(utilizador_id, utilizador_nome, comando, None, False)
-                    
+
                     return "Comando não reconhecido. Digite `!ajuda` para ver os comandos disponíveis."
         except Exception as e:
             # Notifica erro - exceção durante processamento
             erro_msg = f"Erro ao processar comando: {str(e)}"
             self.logger.critical(f"Exceção ao processar comando '{comando}': {str(e)}")
             self._notificar_erro(utilizador_id, comando, seccao, erro_msg)
-            
+
             # Notifica que o comando falhou
             self._notificar_comando_processado(utilizador_id, utilizador_nome, comando, seccao, False)
-            
+
             # Retorna mensagem de erro genérica
             return "Ocorreu um erro ao processar o seu comando. Por favor, tente novamente mais tarde."
-    
-    #formatação de resposta que deverá ser feita na view
-    def _formatar_resposta(self, seccao, dados):
+
+    def _obter_ajuda(self):
         """
-        Formata a resposta com base na secção e nos dados obtidos.        
+        Obtém uma mensagem de ajuda para o utilizador.
         """
-        self.logger.debug(f"Formatando resposta para secção '{seccao}'")
-        resposta = f"**{seccao.upper()}**\n\n"
-        
-        if isinstance(dados, str):
-            resposta += dados
-        elif isinstance(dados, list):
-            for i, item in enumerate(dados, 1):
-                resposta += f"{i}. {item}\n"
-        elif isinstance(dados, dict):
-            for chave, valor in dados.items():
-                resposta += f"**{chave}**: {valor}\n\n"
-        
-        return resposta
-    
- 
-     
+        return "Aqui estão alguns comandos que você pode usar:\n" \
+               "- `!puc` para obter uma visão geral do PUC\n" \
+               "- `!ajuda` para obter ajuda sobre comandos\n" \
+               "- `!listar_seccoes` para listar todas as secções disponíveis\n" \
+               "- `!unidade_curricular <nome_da_unidade>` para obter informações sobre uma unidade curricular\n" \
+               "- `!competencias <nome_da_unidade>` para obter informações sobre competências de uma unidade curricular\n" \
+               "- `!roteiro <nome_da_unidade>` para obter informações sobre o roteiro de uma unidade curricular\n" \
+               "- `!metodologia <nome_da_unidade>` para obter informações sobre a metodologia de uma unidade curricular\n" \
+               "- `!recursos <nome_da_unidade>` para obter informações sobre recursos de uma unidade curricular\n" \
+               "- `!calendario <nome_da_unidade>` para obter informações sobre o calendário de uma unidade curricular\n" \
+               "- `!avaliacao <nome_da_unidade>` para obter informações sobre a avaliação de uma unidade curricular\n" \
+               "- `!exame <nome_da_unidade>` para obter informações sobre o exame de uma unidade curricular\n" \
+               "- `!ia <nome_da_unidade>` para obter informações sobre a integração de uma unidade curricular\n" \
+               "- `!estrutura <nome_da_unidade>` para obter informações sobre a estrutura de uma unidade curricular\n" \
+               "- `!cartao` para obter informações sobre o cartão de uma unidade curricular"
+
+    def _obter_puc_geral(self):
+        """
+        Obtém uma visão geral do PUC.
+        """
+        return "O PUC é uma instituição de ensino superior que oferece uma ampla variedade de cursos de graduação, pós-graduação e especialização. Com uma rede de campus espalhada por diferentes regiões do país, o PUC oferece uma educação de qualidade, com uma abordagem prática e focada nas necessidades do mercado de trabalho. A instituição conta com uma equipe de professores altamente qualificados, cursos bem estruturados e uma infraestrutura adequada para garantir uma experiência de aprendizado única. Além disso, o PUC possui uma ampla rede de parcerias com empresas e organizações, o que possibilita a realização de estágios, projetos e pesquisas. Seja você um estudante que busca uma educação de excelência, um profissional que deseja se especializar ou alguém que busca uma nova carreira, o PUC é o lugar certo para você alcançar seus objetivos."
+
+
+

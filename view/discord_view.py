@@ -44,8 +44,9 @@ class DiscordView:
             # Comandos relacionados à PUC (informações da disciplina)
             if command_name in ["uc", "competencias", "roteiro", "metodologia", "recursos",
                                 "calendario", "avaliacao", "exame", "ia", "estrutura", "cartao"]:
-                content = self._read_puc_file(command_name)
-                await self._send_formatted_response(ctx, command_name, content)
+                dados = self.controller.processar_comando(ctx.author.id, ctx.author.name, command_name)
+                resposta = self._formatar_resposta(command_name, dados)
+                await self._send_formatted_response(ctx, command_name, resposta)
                 bot_logger.debug(f"Comando PUC {command_name} processado com sucesso")
 
             # Comandos administrativos
@@ -105,52 +106,55 @@ class DiscordView:
     async def _send_statistics_response(self, ctx, stats: dict) -> None:
         """Envia uma resposta formatada com estatísticas."""
         try:
-            embed = discord.Embed(
-                title="Estatísticas do Bot",
-                description="Resumo de uso do bot",
-                color=discord.Color.blue()
-            )
-
-            # Informações gerais
-            embed.add_field(
-                name="Informações Gerais",
-                value=f"Total de consultas: {stats['total_consultas']}\n"
-                      f"Utilizadores únicos: {stats['utilizadores_unicos']}\n"
-                      f"Primeiro acesso: {stats['primeiro_acesso']}\n"
-                      f"Último acesso: {stats['ultimo_acesso']}",
-                inline=False
-            )
-
-            # Comandos populares
-            comandos_str = "\n".join(f"{cmd}: {count} vezes" for cmd, count in stats['comandos_populares'][:5])
-            embed.add_field(
-                name="Top 5 Comandos",
-                value=comandos_str if comandos_str else "Nenhum comando registrado",
-                inline=True
-            )
-
-            # Seções populares
-            seccoes_str = "\n".join(f"{sec}: {count} vezes" for sec, count in stats['seccoes_populares'][:5])
-            embed.add_field(
-                name="Top 5 Seções",
-                value=seccoes_str if seccoes_str else "Nenhuma seção registrada",
-                inline=True
-            )
-
-            # Usuários mais ativos
-            usuarios_str = "\n".join(f"{nome}: {count} comandos" for _, nome, count in stats['utilizadores_ativos'][:5])
-            embed.add_field(
-                name="Top 5 Usuários",
-                value=usuarios_str if usuarios_str else "Nenhum usuário registrado",
-                inline=False
-            )
-
-            await ctx.send(embed=embed)
+            formatted_stats = self._formatar_estatisticas_para_discord(stats)
+            await self._send_formatted_response(ctx, "estatisticas", formatted_stats)
             bot_logger.debug("Estatísticas enviadas com sucesso")
 
         except Exception as e:
             bot_logger.error(f"Erro ao enviar estatísticas: {str(e)}")
             raise
+
+    def _formatar_data(self, data_str):
+        """Formata uma string de data ISO para um formato legível."""
+        if not data_str:
+            return ""
+        try:
+            data_obj = datetime.fromisoformat(data_str)
+            return data_obj.strftime('%d/%m/%Y %H:%M:%S')
+        except (ValueError, TypeError):
+            return data_str
+
+    def _formatar_estatisticas_para_discord(self, estatisticas):
+        """Formata as estatísticas para apresentação na interface Discord."""
+        primeiro_acesso = self._formatar_data(estatisticas.get('primeiro_acesso', ''))
+        ultimo_acesso = self._formatar_data(estatisticas.get('ultimo_acesso', ''))
+        return {
+            "titulo": "Estatísticas do Bot",
+            "descricao": "Resumo de uso do bot",
+            "seccoes": [
+                {
+                    "titulo": "Informações Gerais",
+                    "itens": [
+                        f"Total de consultas: {estatisticas['total_consultas']}",
+                        f"Utilizadores únicos: {estatisticas['utilizadores_unicos']}",
+                        f"Primeiro acesso: {primeiro_acesso}",
+                        f"Último acesso: {ultimo_acesso}"
+                    ]
+                },
+                {
+                    "titulo": "Top 5 Comandos",
+                    "itens": [f"{cmd}: {count} vezes" for cmd, count in estatisticas['comandos_populares'][:5]] or ["Nenhum comando registrado"]
+                },
+                {
+                    "titulo": "Top 5 Seções",
+                    "itens": [f"{secao}: {count} vezes" for secao, count in estatisticas['seccoes_populares'][:5]] or ["Nenhuma seção registrada"]
+                },
+                {
+                    "titulo": "Top 5 Utilizadores",
+                    "itens": [f"{nome} (ID: {uid}): {count} consultas" for uid, nome, count in estatisticas['utilizadores_ativos'][:5]] or ["Nenhum usuário registrado"]
+                }
+            ]
+        }
 
     def _read_puc_file(self, filename: str) -> str:
         """Lê o conteúdo de um ficheiro da pasta dados/puc."""
@@ -308,3 +312,16 @@ class DiscordView:
     def _on_erro(self, admin_id: str, operacao: str, mensagem_erro: str) -> None:
         """Handler para evento de erro."""
         bot_logger.error(f"Erro na operação {operacao} por admin {admin_id}: {mensagem_erro}")
+
+    def _formatar_resposta(self, seccao, dados):
+        """Formata a resposta com base na secção e nos dados obtidos."""
+        resposta = f"**{seccao.upper()}**\n\n"
+        if isinstance(dados, str):
+            resposta += dados
+        elif isinstance(dados, list):
+            for i, item in enumerate(dados, 1):
+                resposta += f"{i}. {item}\n"
+        elif isinstance(dados, dict):
+            for chave, valor in dados.items():
+                resposta += f"**{chave}**: {valor}\n\n"
+        return resposta
