@@ -45,12 +45,12 @@ class DiscordView:
             bot_logger.info(f"Comando recebido: {command_name} de {ctx.author.name} (ID: {ctx.author.id})")
 
             # Comandos relacionados à PUC (informações da disciplina)
-            if command_name in ["uc", "competencias", "roteiro", "metodologia", "recursos",
-                                "calendario", "avaliacao", "exame", "ia", "estrutura", "cartao"]:
+            if command_name in self.controller.comandos_validos:
+
                 dados = self.controller.processar_comando(ctx.author.id, ctx.author.name, command_name)
                 resposta = self._formatar_resposta(command_name, dados)
                 await self._send_formatted_response(ctx, command_name, resposta)
-                bot_logger.debug(f"Comando PUC {command_name} processado com sucesso")
+                bot_logger.debug(f"Comando {command_name} processado com sucesso")
 
                 # ⚡ AQUI: registar a consulta!
                 self.consulta_model.registar_consulta(
@@ -179,11 +179,29 @@ class DiscordView:
             bot_logger.error(f"Arquivo {filename}.txt não encontrado")
             return f"Ficheiro {filename} não encontrado."
 
-    async def _send_formatted_response(self, ctx, command_name: str, content: str) -> None:
+    async def _send_formatted_response(self, ctx, command_name: str, content) -> None:
         """Envia uma resposta formatada para o Discord."""
         try:
-            if isinstance(content, dict):
-                content = json.dumps(content, indent=2)
+            # Se for dict (como no caso das estatísticas), cria embed personalizado
+            if isinstance(content, dict) and "seccoes" in content:
+                embed = discord.Embed(
+                    title=content.get("titulo", "Informação"),
+                    description=content.get("descricao", ""),
+                    color=discord.Color.blue()
+                )
+
+                for sec in content["seccoes"]:
+                    titulo = sec.get("titulo", "")
+                    itens = "\n".join(sec.get("itens", []))
+                    embed.add_field(name=titulo, value=itens, inline=False)
+
+                await ctx.send(embed=embed)
+                bot_logger.debug(f"Resposta de estatísticas enviada para comando {command_name}")
+                return
+
+            # Caso contrário, assume conteúdo textual
+            if not isinstance(content, str):
+                content = str(content)
 
             lines = content.split('\n')
             title = lines[0].replace('#', '').strip()
@@ -196,6 +214,7 @@ class DiscordView:
             )
             await ctx.send(embed=embed)
             bot_logger.debug(f"Resposta formatada enviada para comando {command_name}")
+
         except Exception as e:
             bot_logger.error(f"Erro ao enviar resposta formatada: {str(e)}")
             raise

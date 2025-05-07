@@ -15,6 +15,9 @@ class UserController:
         self.dados_model = DadosModel()
         self.consulta_model = ConsultaModel()
         self.logger = bot_logger
+        self.comandos_validos = [
+            "uc", "competencias", "roteiro", "metodologia", "recursos",
+            "calendario", "avaliacao", "exame", "ia", "estrutura", "cartao"]
 
         # Listeners para eventos do controlador
         self.listeners_comando_processado = []  # Eventos para quando um comando é processado
@@ -112,11 +115,7 @@ class UserController:
         self.logger.info(f"Recebido comando '{comando}' de {utilizador_nome} (ID: {utilizador_id})")
 
         # Lista de comandos válidos que este controlador pode processar
-        comandos_validos = ["puc", "ajuda", "listar_seccoes", "unidade_curricular",
-                            "competencias", "roteiro", "metodologia", "recursos",
-                            "calendario", "avaliacao", "exame", "ia", "estrutura", "cartao"]
-
-        if comando in comandos_validos:
+        if comando in self.comandos_validos:
             # IMPORTANTE: Registra a consulta no modelo primeiro, independentemente do resultado
             # Este é o ponto crítico para garantir que as estatísticas sejam registradas
             self.logger.debug(f"Registrando consulta para comando '{comando}' de {utilizador_nome}")
@@ -173,20 +172,19 @@ class UserController:
                     self._notificar_comando_processado(utilizador_id, utilizador_nome, comando, None, True)
 
                     return self._obter_ajuda()
-                # Comando PUC
-                elif comando == "puc":
-                    self.logger.debug("Fornecendo visão geral do PUC")
-                    # Notifica que o comando foi processado com sucesso
-                    self._notificar_comando_processado(utilizador_id, utilizador_nome, comando, None, True)
-
-                    return self._obter_puc_geral()
+                # Comando UC
+                #elif comando == "uc":
+                #    self.logger.debug("Fornecendo visão geral da UC")
+                #    # Notifica que o comando foi processado com sucesso
+                #    self._notificar_comando_processado(utilizador_id, utilizador_nome, comando, None, True)
+#
+                #    #return self._obter_puc_geral()
                 # Outros comandos específicos sem secção
-                elif comando in ["unidade_curricular", "competencias", "roteiro", "metodologia",
-                                 "recursos", "avaliacao", "calendario", "exame", "ia",
-                                 "estrutura", "cartao"]:
+                elif comando in self.comandos_validos:
+
                     self.logger.debug(f"Tratando comando '{comando}' como secção")
                     # Trata o comando como se fosse uma secção
-                    return self.obter_resposta(utilizador_id, utilizador_nome, "puc", comando)
+                    return self.obter_resposta(utilizador_id, utilizador_nome, "uc", comando)
                 # Comando não reconhecido
                 else:
                     # Notifica erro - comando não reconhecido
@@ -210,31 +208,31 @@ class UserController:
             # Retorna mensagem de erro genérica
             return "Ocorreu um erro ao processar o seu comando. Por favor, tente novamente mais tarde."
 
-    def _obter_ajuda(self):
-        """
-        Obtém uma mensagem de ajuda para o utilizador.
-        """
-        return "Aqui estão alguns comandos que você pode usar:\n" \
-               "- `!puc` para obter uma visão geral do PUC\n" \
-               "- `!ajuda` para obter ajuda sobre comandos\n" \
-               "- `!listar_seccoes` para listar todas as secções disponíveis\n" \
-               "- `!unidade_curricular <nome_da_unidade>` para obter informações sobre uma unidade curricular\n" \
-               "- `!competencias <nome_da_unidade>` para obter informações sobre competências de uma unidade curricular\n" \
-               "- `!roteiro <nome_da_unidade>` para obter informações sobre o roteiro de uma unidade curricular\n" \
-               "- `!metodologia <nome_da_unidade>` para obter informações sobre a metodologia de uma unidade curricular\n" \
-               "- `!recursos <nome_da_unidade>` para obter informações sobre recursos de uma unidade curricular\n" \
-               "- `!calendario <nome_da_unidade>` para obter informações sobre o calendário de uma unidade curricular\n" \
-               "- `!avaliacao <nome_da_unidade>` para obter informações sobre a avaliação de uma unidade curricular\n" \
-               "- `!exame <nome_da_unidade>` para obter informações sobre o exame de uma unidade curricular\n" \
-               "- `!ia <nome_da_unidade>` para obter informações sobre a integração de uma unidade curricular\n" \
-               "- `!estrutura <nome_da_unidade>` para obter informações sobre a estrutura de uma unidade curricular\n" \
-               "- `!cartao` para obter informações sobre o cartão de uma unidade curricular"
-
-    def _obter_puc_geral(self):
-        """
-        Obtém uma visão geral do PUC.
-        """
-        return "O PUC é uma instituição de ensino superior que oferece uma ampla variedade de cursos de graduação, pós-graduação e especialização. Com uma rede de campus espalhada por diferentes regiões do país, o PUC oferece uma educação de qualidade, com uma abordagem prática e focada nas necessidades do mercado de trabalho. A instituição conta com uma equipe de professores altamente qualificados, cursos bem estruturados e uma infraestrutura adequada para garantir uma experiência de aprendizado única. Além disso, o PUC possui uma ampla rede de parcerias com empresas e organizações, o que possibilita a realização de estágios, projetos e pesquisas. Seja você um estudante que busca uma educação de excelência, um profissional que deseja se especializar ou alguém que busca uma nova carreira, o PUC é o lugar certo para você alcançar seus objetivos."
+    #def _obter_ajuda(self):
+    #    """
+    #    Obtém uma mensagem de ajuda para o utilizador.
+    #    """
+    #    return "Aqui estão alguns comandos que você pode usar:\n" \
+    #           "- `!puc` para obter uma visão geral do PUC\n" \
+    #           "- `!ajuda` para obter ajuda sobre comandos\n" \
+    #           "- `!listar_seccoes` para listar todas as secções disponíveis\n" \
+    #           "- `!unidade_curricular <nome_da_unidade>` para obter informações sobre uma unidade curricular\n" \
+    #           "- `!competencias <nome_da_unidade>` para obter informações sobre competências de uma unidade curricular\n" \
+    #           "- `!roteiro <nome_da_unidade>` para obter informações sobre o roteiro de uma unidade curricular\n" \
+    #           "- `!metodologia <nome_da_unidade>` para obter informações sobre a metodologia de uma unidade curricular\n" \
+    #           "- `!recursos <nome_da_unidade>` para obter informações sobre recursos de uma unidade curricular\n" \
+    #           "- `!calendario <nome_da_unidade>` para obter informações sobre o calendário de uma unidade curricular\n" \
+    #           "- `!avaliacao <nome_da_unidade>` para obter informações sobre a avaliação de uma unidade curricular\n" \
+    #           "- `!exame <nome_da_unidade>` para obter informações sobre o exame de uma unidade curricular\n" \
+    #           "- `!ia <nome_da_unidade>` para obter informações sobre a integração de uma unidade curricular\n" \
+    #           "- `!estrutura <nome_da_unidade>` para obter informações sobre a estrutura de uma unidade curricular\n" \
+    #           "- `!cartao` para obter informações sobre o cartão de uma unidade curricular"
+#
+    #def _obter_puc_geral(self):
+    #    """
+    #    Obtém uma visão geral do PUC.
+    #    """
+    #    return "O PUC é uma instituição de ensino superior que oferece uma ampla variedade de cursos de graduação, pós-graduação e especialização. Com uma rede de campus espalhada por diferentes regiões do país, o PUC oferece uma educação de qualidade, com uma abordagem prática e focada nas necessidades do mercado de trabalho. A instituição conta com uma equipe de professores altamente qualificados, cursos bem estruturados e uma infraestrutura adequada para garantir uma experiência de aprendizado única. Além disso, o PUC possui uma ampla rede de parcerias com empresas e organizações, o que possibilita a realização de estágios, projetos e pesquisas. Seja você um estudante que busca uma educação de excelência, um profissional que deseja se especializar ou alguém que busca uma nova carreira, o PUC é o lugar certo para você alcançar seus objetivos."
 
 
 

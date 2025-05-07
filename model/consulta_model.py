@@ -7,11 +7,29 @@ class ConsultaModel:
     def __init__(self, caminho_registos="estatistica/registos/registos.json"):
         self.caminho_registos = caminho_registos
         self.registos = self.carregar_registos()
+        self.mapa_seccoes = self.carregar_seccoes("dados/puc/seccoes.txt")
 
+    @staticmethod
+    def carregar_seccoes(caminho: str) -> dict:
+        """Carrega as seções de um arquivo TXT."""
+        mapa = {}
+        with open(caminho, "r", encoding="utf-8") as f:
+            for linha in f:
+                linha = linha.strip()
+                if linha and "=" in linha:
+                    chave, valor = linha.split("=", 1)
+                    mapa[chave.strip()] = valor.strip()
+        return mapa
+
+    
     def carregar_registos(self):
         if os.path.exists(self.caminho_registos):
-            with open(self.caminho_registos, "r", encoding="utf-8") as f:
-                return json.load(f)
+            try:
+                with open(self.caminho_registos, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except json.JSONDecodeError:
+                print(f"Erro ao carregar o arquivo {self.caminho_registos}. O arquivo pode estar corrompido.")
+                return []
         return []
 
     def guardar_registos(self):
@@ -19,13 +37,14 @@ class ConsultaModel:
         with open(self.caminho_registos, "w", encoding="utf-8") as f:
             json.dump(self.registos, f, indent=4, ensure_ascii=False)
 
+
     def registar_consulta(self, utilizador_id, nome, comando, seccao):
         consulta = {
-            "data": datetime.now().isoformat(),
+            "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "utilizador_id": utilizador_id,
             "nome": nome,
             "comando": comando,
-            "secao": seccao
+            "secao": self.mapa_seccoes.get(seccao, seccao)
         }
         self.registos.append(consulta)
         self.guardar_registos()
