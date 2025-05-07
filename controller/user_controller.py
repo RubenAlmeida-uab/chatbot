@@ -1,6 +1,6 @@
-import logging
 from model.dados_model import DadosModel
 from model.consulta_model import ConsultaModel
+from utils.logger import bot_logger
 
 
 class UserController:
@@ -14,6 +14,7 @@ class UserController:
         """
         self.dados_model = DadosModel()
         self.consulta_model = ConsultaModel()
+        self.logger = bot_logger
 
         # Listeners para eventos do controlador
         self.listeners_comando_processado = []  # Eventos para quando um comando é processado

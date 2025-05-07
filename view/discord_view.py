@@ -1,6 +1,9 @@
 import discord
+from datetime import datetime
+import json
 from pathlib import Path
 from controller.bot_controller import BotController
+from controller.user_controller import UserController
 from utils.logger import bot_logger
 from utils.admin_checker import AdminChecker
 from model.consulta_model import ConsultaModel
@@ -15,16 +18,18 @@ class DiscordView:
 
     def __init__(self, bot):
         self.bot = bot
-        self.controller = BotController()
+        self.controller = UserController()  # <-- Correção aqui
+        self.bot.controller = BotController()
         self.data_dir = Path("dados/puc")
         self.admin_checker = AdminChecker()
         self.consulta_model = ConsultaModel()  # <-- ESTA LINHA É ESSENCIAL!!
 
-        # Registra listeners do controller
-        self.controller.adicionar_listener_estatisticas_acedidas(self._on_estatisticas_acedidas)
-        self.controller.adicionar_listener_relatorio_gerado(self._on_relatorio_gerado)
-        self.controller.adicionar_listener_grafico_gerado(self._on_grafico_gerado)
-        self.controller.adicionar_listener_erro(self._on_erro)
+        # Registra listeners do bot controller
+        self.bot.controller.adicionar_listener_estatisticas_acedidas(self._on_estatisticas_acedidas)
+        self.bot.controller.adicionar_listener_relatorio_gerado(self._on_relatorio_gerado)
+        self.bot.controller.adicionar_listener_grafico_gerado(self._on_grafico_gerado)
+        self.bot.controller.adicionar_listener_erro(self._on_erro)
+
 
         bot_logger.info("DiscordView inicializada com sucesso")
     async def process_command(self, ctx, command_name: str, *args) -> None:
@@ -68,22 +73,22 @@ class DiscordView:
                 try:
                     if command_name == "relatorio":
                         # Gera o relatório diretamente através do controller
-                        report_file = await self.controller.gerar_relatorio(str(ctx.author.id))
+                        report_file = await self.bot.controller.gerar_relatorio(str(ctx.author.id))
                         await ctx.send("Aqui está o relatório solicitado:", file=report_file)
                     elif command_name == "estatisticas":
-                        estatisticas = self.controller.obter_estatisticas(str(ctx.author.id))
+                        estatisticas = self.bot.controller.obter_estatisticas(str(ctx.author.id))
                         await self._send_statistics_response(ctx, estatisticas)
                     elif command_name == "historico":
                         if not args:
                             await ctx.send("Por favor, mencione um usuário para ver seu histórico.")
                             return
-                        historico = self.controller.obter_utilizador_historico(args[0], str(ctx.author.id))
+                        historico = self.bot.controller.obter_utilizador_historico(args[0], str(ctx.author.id))
                         await self._send_user_history_response(ctx, historico)
                     elif command_name == "grafico_comandos":
-                        graph_file = await self.controller.gerar_grafico_comandos(str(ctx.author.id))
+                        graph_file = await self.bot.controller.gerar_grafico_comandos(str(ctx.author.id))
                         await ctx.send("Aqui está o gráfico de comandos:", file=graph_file)
                     elif command_name == "grafico_seccoes":
-                        graph_file = await self.controller.gerar_grafico_seccoes(str(ctx.author.id))
+                        graph_file = await self.bot.controller.gerar_grafico_seccoes(str(ctx.author.id))
                         await ctx.send("Aqui está o gráfico de seções:", file=graph_file)
 
                     bot_logger.debug(f"Comando administrativo {command_name} processado com sucesso")
@@ -177,6 +182,9 @@ class DiscordView:
     async def _send_formatted_response(self, ctx, command_name: str, content: str) -> None:
         """Envia uma resposta formatada para o Discord."""
         try:
+            if isinstance(content, dict):
+                content = json.dumps(content, indent=2)
+
             lines = content.split('\n')
             title = lines[0].replace('#', '').strip()
             description = '\n'.join(lines[1:]).strip()
