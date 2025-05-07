@@ -7,6 +7,7 @@ from utils.logger import bot_logger
 import sys
 import os
 
+
 # Configuração inicial do logger
 bot_logger.info("Iniciando configuração do bot...")
 
@@ -60,7 +61,6 @@ async def on_command_error(ctx, error):
 @bot.command()
 async def uc(ctx):
     await view.process_command(ctx, "uc")
-
 
 @bot.command()
 async def competencias(ctx):

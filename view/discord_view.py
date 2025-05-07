@@ -1,6 +1,9 @@
 import discord
+from datetime import datetime
+import json
 from pathlib import Path
 from controller.bot_controller import BotController
+from controller.user_controller import UserController
 from utils.logger import bot_logger
 from utils.admin_checker import AdminChecker
 from model.consulta_model import ConsultaModel
@@ -15,16 +18,18 @@ class DiscordView:
 
     def __init__(self, bot):
         self.bot = bot
-        self.controller = BotController()
+        self.controller = UserController()  # <-- Correção aqui
+        self.bot.controller = BotController()
         self.data_dir = Path("dados/puc")
         self.admin_checker = AdminChecker()
         self.consulta_model = ConsultaModel()  # <-- ESTA LINHA É ESSENCIAL!!
 
-        # Registra listeners do controller
-        self.controller.adicionar_listener_estatisticas_acedidas(self._on_estatisticas_acedidas)
-        self.controller.adicionar_listener_relatorio_gerado(self._on_relatorio_gerado)
-        self.controller.adicionar_listener_grafico_gerado(self._on_grafico_gerado)
-        self.controller.adicionar_listener_erro(self._on_erro)
+        # Registra listeners do bot controller
+        self.bot.controller.adicionar_listener_estatisticas_acedidas(self._on_estatisticas_acedidas)
+        self.bot.controller.adicionar_listener_relatorio_gerado(self._on_relatorio_gerado)
+        self.bot.controller.adicionar_listener_grafico_gerado(self._on_grafico_gerado)
+        self.bot.controller.adicionar_listener_erro(self._on_erro)
+
 
         bot_logger.info("DiscordView inicializada com sucesso")
     async def process_command(self, ctx, command_name: str, *args) -> None:
@@ -40,11 +45,12 @@ class DiscordView:
             bot_logger.info(f"Comando recebido: {command_name} de {ctx.author.name} (ID: {ctx.author.id})")
 
             # Comandos relacionados à PUC (informações da disciplina)
-            if command_name in ["uc", "competencias", "roteiro", "metodologia", "recursos",
-                                "calendario", "avaliacao", "exame", "ia", "estrutura", "cartao"]:
-                content = self._read_puc_file(command_name)
-                await self._send_formatted_response(ctx, command_name, content)
-                bot_logger.debug(f"Comando PUC {command_name} processado com sucesso")
+            if command_name in self.controller.comandos_validos:
+
+                dados = self.controller.processar_comando(ctx.author.id, ctx.author.name, command_name)
+                resposta = self._formatar_resposta(command_name, dados)
+                await self._send_formatted_response(ctx, command_name, resposta)
+                bot_logger.debug(f"Comando {command_name} processado com sucesso")
 
                 # ⚡ AQUI: registar a consulta!
                 self.consulta_model.registar_consulta(
@@ -67,22 +73,22 @@ class DiscordView:
                 try:
                     if command_name == "relatorio":
                         # Gera o relatório diretamente através do controller
-                        report_file = await self.controller.gerar_relatorio(str(ctx.author.id))
+                        report_file = await self.bot.controller.gerar_relatorio(str(ctx.author.id))
                         await ctx.send("Aqui está o relatório solicitado:", file=report_file)
                     elif command_name == "estatisticas":
-                        estatisticas = self.controller.obter_estatisticas(str(ctx.author.id))
+                        estatisticas = self.bot.controller.obter_estatisticas(str(ctx.author.id))
                         await self._send_statistics_response(ctx, estatisticas)
                     elif command_name == "historico":
                         if not args:
                             await ctx.send("Por favor, mencione um usuário para ver seu histórico.")
                             return
-                        historico = self.controller.obter_utilizador_historico(args[0], str(ctx.author.id))
+                        historico = self.bot.controller.obter_utilizador_historico(args[0], str(ctx.author.id))
                         await self._send_user_history_response(ctx, historico)
                     elif command_name == "grafico_comandos":
-                        graph_file = await self.controller.gerar_grafico_comandos(str(ctx.author.id))
+                        graph_file = await self.bot.controller.gerar_grafico_comandos(str(ctx.author.id))
                         await ctx.send("Aqui está o gráfico de comandos:", file=graph_file)
                     elif command_name == "grafico_seccoes":
-                        graph_file = await self.controller.gerar_grafico_seccoes(str(ctx.author.id))
+                        graph_file = await self.bot.controller.gerar_grafico_seccoes(str(ctx.author.id))
                         await ctx.send("Aqui está o gráfico de seções:", file=graph_file)
 
                     bot_logger.debug(f"Comando administrativo {command_name} processado com sucesso")
@@ -111,52 +117,55 @@ class DiscordView:
     async def _send_statistics_response(self, ctx, stats: dict) -> None:
         """Envia uma resposta formatada com estatísticas."""
         try:
-            embed = discord.Embed(
-                title="Estatísticas do Bot",
-                description="Resumo de uso do bot",
-                color=discord.Color.blue()
-            )
-
-            # Informações gerais
-            embed.add_field(
-                name="Informações Gerais",
-                value=f"Total de consultas: {stats['total_consultas']}\n"
-                      f"Utilizadores únicos: {stats['utilizadores_unicos']}\n"
-                      f"Primeiro acesso: {stats['primeiro_acesso']}\n"
-                      f"Último acesso: {stats['ultimo_acesso']}",
-                inline=False
-            )
-
-            # Comandos populares
-            comandos_str = "\n".join(f"{cmd}: {count} vezes" for cmd, count in stats['comandos_populares'][:5])
-            embed.add_field(
-                name="Top 5 Comandos",
-                value=comandos_str if comandos_str else "Nenhum comando registrado",
-                inline=True
-            )
-
-            # Seções populares
-            seccoes_str = "\n".join(f"{sec}: {count} vezes" for sec, count in stats['seccoes_populares'][:5])
-            embed.add_field(
-                name="Top 5 Seções",
-                value=seccoes_str if seccoes_str else "Nenhuma seção registrada",
-                inline=True
-            )
-
-            # Usuários mais ativos
-            usuarios_str = "\n".join(f"{nome}: {count} comandos" for _, nome, count in stats['utilizadores_ativos'][:5])
-            embed.add_field(
-                name="Top 5 Usuários",
-                value=usuarios_str if usuarios_str else "Nenhum usuário registrado",
-                inline=False
-            )
-
-            await ctx.send(embed=embed)
+            formatted_stats = self._formatar_estatisticas_para_discord(stats)
+            await self._send_formatted_response(ctx, "estatisticas", formatted_stats)
             bot_logger.debug("Estatísticas enviadas com sucesso")
 
         except Exception as e:
             bot_logger.error(f"Erro ao enviar estatísticas: {str(e)}")
             raise
+
+    def _formatar_data(self, data_str):
+        """Formata uma string de data ISO para um formato legível."""
+        if not data_str:
+            return ""
+        try:
+            data_obj = datetime.fromisoformat(data_str)
+            return data_obj.strftime('%d/%m/%Y %H:%M:%S')
+        except (ValueError, TypeError):
+            return data_str
+
+    def _formatar_estatisticas_para_discord(self, estatisticas):
+        """Formata as estatísticas para apresentação na interface Discord."""
+        primeiro_acesso = self._formatar_data(estatisticas.get('primeiro_acesso', ''))
+        ultimo_acesso = self._formatar_data(estatisticas.get('ultimo_acesso', ''))
+        return {
+            "titulo": "Estatísticas do Bot",
+            "descricao": "Resumo de uso do bot",
+            "seccoes": [
+                {
+                    "titulo": "Informações Gerais",
+                    "itens": [
+                        f"Total de consultas: {estatisticas['total_consultas']}",
+                        f"Utilizadores únicos: {estatisticas['utilizadores_unicos']}",
+                        f"Primeiro acesso: {primeiro_acesso}",
+                        f"Último acesso: {ultimo_acesso}"
+                    ]
+                },
+                {
+                    "titulo": "Top 5 Comandos",
+                    "itens": [f"{cmd}: {count} vezes" for cmd, count in estatisticas['comandos_populares'][:5]] or ["Nenhum comando registrado"]
+                },
+                {
+                    "titulo": "Top 5 Seções",
+                    "itens": [f"{secao}: {count} vezes" for secao, count in estatisticas['seccoes_populares'][:5]] or ["Nenhuma seção registrada"]
+                },
+                {
+                    "titulo": "Top 5 Utilizadores",
+                    "itens": [f"{nome} (ID: {uid}): {count} consultas" for uid, nome, count in estatisticas['utilizadores_ativos'][:5]] or ["Nenhum usuário registrado"]
+                }
+            ]
+        }
 
     def _read_puc_file(self, filename: str) -> str:
         """Lê o conteúdo de um ficheiro da pasta dados/puc."""
@@ -170,9 +179,30 @@ class DiscordView:
             bot_logger.error(f"Arquivo {filename}.txt não encontrado")
             return f"Ficheiro {filename} não encontrado."
 
-    async def _send_formatted_response(self, ctx, command_name: str, content: str) -> None:
+    async def _send_formatted_response(self, ctx, command_name: str, content) -> None:
         """Envia uma resposta formatada para o Discord."""
         try:
+            # Se for dict (como no caso das estatísticas), cria embed personalizado
+            if isinstance(content, dict) and "seccoes" in content:
+                embed = discord.Embed(
+                    title=content.get("titulo", "Informação"),
+                    description=content.get("descricao", ""),
+                    color=discord.Color.blue()
+                )
+
+                for sec in content["seccoes"]:
+                    titulo = sec.get("titulo", "")
+                    itens = "\n".join(sec.get("itens", []))
+                    embed.add_field(name=titulo, value=itens, inline=False)
+
+                await ctx.send(embed=embed)
+                bot_logger.debug(f"Resposta de estatísticas enviada para comando {command_name}")
+                return
+
+            # Caso contrário, assume conteúdo textual
+            if not isinstance(content, str):
+                content = str(content)
+
             lines = content.split('\n')
             title = lines[0].replace('#', '').strip()
             description = '\n'.join(lines[1:]).strip()
@@ -184,6 +214,7 @@ class DiscordView:
             )
             await ctx.send(embed=embed)
             bot_logger.debug(f"Resposta formatada enviada para comando {command_name}")
+
         except Exception as e:
             bot_logger.error(f"Erro ao enviar resposta formatada: {str(e)}")
             raise
@@ -314,3 +345,16 @@ class DiscordView:
     def _on_erro(self, admin_id: str, operacao: str, mensagem_erro: str) -> None:
         """Handler para evento de erro."""
         bot_logger.error(f"Erro na operação {operacao} por admin {admin_id}: {mensagem_erro}")
+
+    def _formatar_resposta(self, seccao, dados):
+        """Formata a resposta com base na secção e nos dados obtidos."""
+        resposta = f"**{seccao.upper()}**\n\n"
+        if isinstance(dados, str):
+            resposta += dados
+        elif isinstance(dados, list):
+            for i, item in enumerate(dados, 1):
+                resposta += f"{i}. {item}\n"
+        elif isinstance(dados, dict):
+            for chave, valor in dados.items():
+                resposta += f"**{chave}**: {valor}\n\n"
+        return resposta
