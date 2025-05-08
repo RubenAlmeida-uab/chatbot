@@ -1,0 +1,9 @@
+# Metodologia
+
+A disciplina segue uma abordagem baseada em projetos com foco em:
+- Aprendizagem ativa
+- Resolução de problemas reais
+- Simulação de ambientes de desenvolvimento profissional
+
+Q: Há aulas expositivas?
+A: Não. A aprendizagem é centrada na prática e trabalho em grupo.
