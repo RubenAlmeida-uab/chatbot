@@ -1,6 +1,5 @@
 import discord
 from datetime import datetime
-import json
 from pathlib import Path
 from controller.bot_controller import BotController
 from controller.user_controller import UserController
@@ -8,21 +7,21 @@ from utils.logger import bot_logger
 from utils.admin_checker import AdminChecker
 from model.consulta_model import ConsultaModel
 
-
+# noinspection SpellCheckingInspection # REquisito para evitar erro de verificação de ortografia em produtos jetbrains
 
 class DiscordView:
     """
-    Classe responsável pela camada de View do chatbot no Discord.
-    Gerencia a apresentação de comandos e ficheiros para os utilizadores e administradores.
+    Responsável pelo View.
+    Apresentação de comandos e ficheiros para os utilizadores e administradores.
     """
 
     def __init__(self, bot):
         self.bot = bot
-        self.controller = UserController()  # <-- Correção aqui
+        self.controller = UserController()
         self.bot.controller = BotController()
         self.data_dir = Path("dados/puc")
         self.admin_checker = AdminChecker()
-        self.consulta_model = ConsultaModel()  # <-- ESTA LINHA É ESSENCIAL!!
+        self.consulta_model = ConsultaModel()
 
         # Registra listeners do bot controller
         self.bot.controller.adicionar_listener_estatisticas_acedidas(self._on_estatisticas_acedidas)
@@ -44,68 +43,12 @@ class DiscordView:
         try:
             bot_logger.info(f"Comando recebido: {command_name} de {ctx.author.name} (ID: {ctx.author.id})")
 
-            # Comandos relacionados à PUC (informações da disciplina)
             if command_name in self.controller.comandos_validos:
-
-                dados = self.controller.processar_comando(ctx.author.id, ctx.author.name, command_name)
-                resposta = self._formatar_resposta(command_name, dados)
-                await self._send_formatted_response(ctx, command_name, resposta)
-                bot_logger.debug(f"Comando {command_name} processado com sucesso")
-
-                # ⚡ AQUI: registar a consulta!
-                self.consulta_model.registar_consulta(
-                    str(ctx.author.id),
-                    ctx.author.name,
-                    command_name,
-                    command_name  # ou None se não quiseres associar seção
-                )
-
-            # Comandos administrativos
+                await self._handle_puc_command(ctx, command_name)
             elif command_name in ["relatorio", "estatisticas", "historico", "grafico_comandos", "grafico_seccoes"]:
-                if not await self._check_admin_permission(ctx):
-                    bot_logger.warning(
-                        f"Tentativa de acesso não autorizado ao comando admin {command_name} por {ctx.author.name}")
-                    await ctx.send("Este comando é restrito a administradores.")
-                    return
-
-                bot_logger.info(f"Processando comando administrativo {command_name}")
-
-                try:
-                    if command_name == "relatorio":
-                        # Gera o relatório diretamente através do controller
-                        report_file = await self.bot.controller.gerar_relatorio(str(ctx.author.id))
-                        await ctx.send("Aqui está o relatório solicitado:", file=report_file)
-                    elif command_name == "estatisticas":
-                        estatisticas = self.bot.controller.obter_estatisticas(str(ctx.author.id))
-                        await self._send_statistics_response(ctx, estatisticas)
-                    elif command_name == "historico":
-                        if not args:
-                            await ctx.send("Por favor, mencione um usuário para ver seu histórico.")
-                            return
-                        historico = self.bot.controller.obter_utilizador_historico(args[0], str(ctx.author.id))
-                        await self._send_user_history_response(ctx, historico)
-                    elif command_name == "grafico_comandos":
-                        graph_file = await self.bot.controller.gerar_grafico_comandos(str(ctx.author.id))
-                        await ctx.send("Aqui está o gráfico de comandos:", file=graph_file)
-                    elif command_name == "grafico_seccoes":
-                        graph_file = await self.bot.controller.gerar_grafico_seccoes(str(ctx.author.id))
-                        await ctx.send("Aqui está o gráfico de seções:", file=graph_file)
-
-                    bot_logger.debug(f"Comando administrativo {command_name} processado com sucesso")
-
-                except Exception as e:
-                    bot_logger.error(f"Erro ao processar comando administrativo {command_name}: {str(e)}")
-                    await ctx.send(f"Erro ao processar o comando: {str(e)}")
-
-            # Comando de ajuda
+                await self._handle_admin_command(ctx, command_name, *args)
             elif command_name == "help":
-                if len(args) > 0:
-                    await self._send_command_help(ctx, args[0])
-                    bot_logger.debug(f"Help específico enviado para comando {args[0]}")
-                else:
-                    await self._send_command_list(ctx)
-                    bot_logger.debug("Lista completa de comandos enviada")
-
+                await self._handle_help_command(ctx, *args)
             else:
                 bot_logger.warning(f"Comando não reconhecido: {command_name}")
                 await ctx.send(f"Comando '{command_name}' não reconhecido. Use !help para ver os comandos disponíveis.")
@@ -113,6 +56,74 @@ class DiscordView:
         except Exception as e:
             bot_logger.error(f"Erro ao processar comando {command_name}: {str(e)}")
             await ctx.send(f"Erro ao processar o comando: {str(e)}")
+
+    async def _handle_puc_command(self, ctx, command_name: str) -> None:
+        """Processa comandos relacionados à PUC."""
+        dados = self.controller.processar_comando(ctx.author.id, ctx.author.name, command_name)
+        resposta = self._formatar_resposta(command_name, dados)
+        await self._send_formatted_response(ctx, command_name, resposta)
+        bot_logger.debug(f"Comando {command_name} processado com sucesso")
+
+        self.consulta_model.registar_consulta(
+            str(ctx.author.id),
+            ctx.author.name,
+            command_name,
+            command_name
+        )
+
+    async def _handle_admin_command(self, ctx, command_name: str, *args) -> None:
+        """Processa comandos administrativos."""
+        if not await self._check_admin_permission(ctx):
+            bot_logger.warning(
+                f"Tentativa de acesso não autorizado ao comando admin {command_name} por {ctx.author.name}")
+            await ctx.send("Este comando é restrito a administradores.")
+            return
+
+        bot_logger.info(f"Processando comando administrativo {command_name}")
+
+        try:
+            if command_name == "relatorio":
+                report_file = await self.bot.controller.gerar_relatorio(str(ctx.author.id))
+                await ctx.send("Aqui está o relatório solicitado:", file=report_file)
+            elif command_name == "estatisticas":
+                estatisticas = self.bot.controller.obter_estatisticas(str(ctx.author.id))
+                await self._send_statistics_response(ctx, estatisticas)
+            elif command_name == "historico":
+                await self._handle_historico_command(ctx, *args)
+            elif command_name in ["grafico_comandos", "grafico_seccoes"]:
+                await self._handle_graph_command(ctx, command_name)
+
+            bot_logger.debug(f"Comando administrativo {command_name} processado com sucesso")
+
+        except Exception as e:
+            bot_logger.error(f"Erro ao processar comando administrativo {command_name}: {str(e)}")
+            await ctx.send(f"Erro ao processar o comando: {str(e)}")
+
+    async def _handle_historico_command(self, ctx, *args) -> None:
+        """Processa o comando de histórico."""
+        if not args:
+            await ctx.send("Por favor, mencione um utilizador para ver seu histórico.")
+            return
+        historico = self.bot.controller.obter_utilizador_historico(args[0], str(ctx.author.id))
+        await self._send_user_history_response(ctx, historico)
+
+    async def _handle_graph_command(self, ctx, command_name: str) -> None:
+        """Processa comandos de gráficos."""
+        if command_name == "grafico_comandos":
+            graph_file = await self.bot.controller.gerar_grafico_comandos(str(ctx.author.id))
+            await ctx.send("Aqui está o gráfico de comandos:", file=graph_file)
+        elif command_name == "grafico_seccoes":
+            graph_file = await self.bot.controller.gerar_grafico_seccoes(str(ctx.author.id))
+            await ctx.send("Aqui está o gráfico de seções:", file=graph_file)
+
+    async def _handle_help_command(self, ctx, *args) -> None:
+        """Processa o comando de ajuda."""
+        if len(args) > 0:
+            await self._send_command_help(ctx, args[0])
+            bot_logger.debug(f"Help específico enviado para comando {args[0]}")
+        else:
+            await self._send_command_list(ctx)
+            bot_logger.debug("Lista completa de comandos enviada")
 
     async def _send_statistics_response(self, ctx, stats: dict) -> None:
         """Envia uma resposta formatada com estatísticas."""
@@ -162,7 +173,7 @@ class DiscordView:
                 },
                 {
                     "titulo": "Top 5 Utilizadores",
-                    "itens": [f"{nome} (ID: {uid}): {count} consultas" for uid, nome, count in estatisticas['utilizadores_ativos'][:5]] or ["Nenhum usuário registrado"]
+                    "itens": [f"{nome} (ID: {uid}): {count} consultas" for uid, nome, count in estatisticas['utilizadores_ativos'][:5]] or ["Nenhum utilizador registrado"]
                 }
             ]
         }
@@ -220,16 +231,16 @@ class DiscordView:
             raise
 
     async def _check_admin_permission(self, ctx) -> bool:
-        """Verifica se o usuário tem permissões de administrador."""
+        """Verifica se o utilizador tem permissões de administrador."""
         is_discord_admin = ctx.author.guild_permissions.administrator
         is_env_admin = self.admin_checker.is_admin(str(ctx.author.id))
 
         if is_env_admin:
-            bot_logger.info(f"Usuário {ctx.author.name} (ID: {ctx.author.id}) autenticado como admin via .env")
+            bot_logger.info(f"utilizador {ctx.author.name} (ID: {ctx.author.id}) autenticado como admin via .env")
         elif is_discord_admin:
-            bot_logger.info(f"Usuário {ctx.author.name} (ID: {ctx.author.id}) autenticado como admin via Discord")
+            bot_logger.info(f"utilizador {ctx.author.name} (ID: {ctx.author.id}) autenticado como admin via Discord")
         else:
-            bot_logger.warning(f"Usuário {ctx.author.name} (ID: {ctx.author.id}) não tem permissões de administrador")
+            bot_logger.warning(f"utilizador {ctx.author.name} (ID: {ctx.author.id}) não tem permissões de administrador")
 
         return is_discord_admin or is_env_admin
 
@@ -239,6 +250,8 @@ class DiscordView:
             title=f"Ajuda: {command_name}",
             color=discord.Color.blue()
         )
+
+        DESCRICAO_FIELD_NAME = "Descrição"
 
         if command_name in ["uc", "competencias", "roteiro", "metodologia", "recursos",
                             "calendario", "avaliacao", "exame", "ia", "estrutura", "cartao"]:
@@ -255,17 +268,17 @@ class DiscordView:
 
             # Descrições específicas para cada comando admin
             if command_name == "relatorio":
-                embed.add_field(name="Descrição", value="Gera um relatório completo de uso do bot em formato Markdown",
+                embed.add_field(name=DESCRICAO_FIELD_NAME, value="Gera um relatório completo de uso do bot em formato Markdown",
                                 inline=False)
             elif command_name == "estatisticas":
-                embed.add_field(name="Descrição", value="Mostra um resumo das estatísticas de uso do bot", inline=False)
+                embed.add_field(name=DESCRICAO_FIELD_NAME, value="Mostra um resumo das estatísticas de uso do bot", inline=False)
             elif command_name == "historico":
-                embed.add_field(name="Descrição", value="Mostra o histórico de comandos de um usuário específico",
+                embed.add_field(name=DESCRICAO_FIELD_NAME, value="Mostra o histórico de comandos de um utilizador específico",
                                 inline=False)
             elif command_name == "grafico_comandos":
-                embed.add_field(name="Descrição", value="Gera um gráfico dos comandos mais utilizados", inline=False)
+                embed.add_field(name=DESCRICAO_FIELD_NAME, value="Gera um gráfico dos comandos mais utilizados", inline=False)
             elif command_name == "grafico_seccoes":
-                embed.add_field(name="Descrição", value="Gera um gráfico das seções mais consultadas", inline=False)
+                embed.add_field(name=DESCRICAO_FIELD_NAME, value="Gera um gráfico das seções mais consultadas", inline=False)
 
         else:
             embed.description = "Comando não encontrado"
@@ -345,6 +358,7 @@ class DiscordView:
     def _on_erro(self, admin_id: str, operacao: str, mensagem_erro: str) -> None:
         """Handler para evento de erro."""
         bot_logger.error(f"Erro na operação {operacao} por admin {admin_id}: {mensagem_erro}")
+
 
     def _formatar_resposta(self, seccao, dados):
         """Formata a resposta com base na secção e nos dados obtidos."""
