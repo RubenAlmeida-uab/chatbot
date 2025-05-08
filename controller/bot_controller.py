@@ -108,7 +108,7 @@ class BotController:
 
     # === Métodos para processar comandos da View ===
 
-    async def processar_comando_admin(self, admin_id, admin_nome, comando, *args):
+    async def processar_comando_admin(self, admin_id, comando, *args):
         """
         Processa um comando administrativo recebido pela View.
         """
@@ -163,44 +163,15 @@ class BotController:
         try:
             estatisticas = self.obter_estatisticas()
 
-            # Cria o conteúdo do relatório
-            conteudo = [
-                "# Relatório de Uso do Bot LDS\n",
-                f"Data de geração: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n",
-                f"Período: {estatisticas['primeiro_acesso']} até {estatisticas['ultimo_acesso']}\n\n",
-                f"Total de consultas: {estatisticas['total_consultas']}\n",
-                f"Utilizadores únicos: {estatisticas['utilizadores_unicos']}\n\n",
-                "## Comandos mais populares\n"
-            ]
+            # Gera o conteúdo do relatório
+            conteudo = self._gerar_conteudo_relatorio(estatisticas)
 
             # Define o caminho correto para o diretório de relatórios
             pasta_relatorios = "estatistica/relatorios"
             os.makedirs(pasta_relatorios, exist_ok=True)
 
-            # Adiciona comandos populares
-            if estatisticas['comandos_populares']:
-                for comando, contagem in estatisticas['comandos_populares']:
-                    conteudo.append(f"- {comando}: {contagem} consultas\n")
-            else:
-                conteudo.append("- Nenhum comando registrado\n")
-           
-            conteudo.append("\n## Secções mais consultadas\n")
-            if estatisticas['seccoes_populares']:
-                for seccao, contagem in estatisticas['seccoes_populares']:
-                    conteudo.append(f"- {seccao}: {contagem} consultas\n")
-            else:
-                conteudo.append("- Nenhuma secção registrada\n")
-
-            # Adiciona utilizadores ativos
-            conteudo.append("\n## Utilizadores mais ativos\n")
-            if estatisticas['utilizadores_ativos']:
-                for utilizador_id, nome, contagem in estatisticas['utilizadores_ativos']:
-                    conteudo.append(f"- {nome} (ID: {utilizador_id}): {contagem} consultas\n")
-            else:
-                conteudo.append("- Nenhum utilizador registrado\n")
-
             # Cria um ficheiro temporário com o relatório
-            filename = f"{pasta_relatorios}/relatorio_bot_lds_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"#pode ser tb txt
+            filename = f"{pasta_relatorios}/relatorio_bot_lds_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
             with open(filename, 'w', encoding='utf-8') as f:
                 f.writelines(conteudo)
 
@@ -214,6 +185,43 @@ class BotController:
             if admin_id:
                 self._notificar_erro(admin_id, "gerar_relatorio", str(e))
             raise
+
+    def _gerar_conteudo_relatorio(self, estatisticas):
+        """
+        Gera o conteúdo do relatório com base nas estatísticas fornecidas.
+        """
+        conteudo = [
+            "# Relatório de Uso do Bot LDS\n",
+            f"Data de geração: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n",
+            f"Período: {estatisticas['primeiro_acesso']} até {estatisticas['ultimo_acesso']}\n\n",
+            f"Total de consultas: {estatisticas['total_consultas']}\n",
+            f"Utilizadores únicos: {estatisticas['utilizadores_unicos']}\n\n",
+            "## Comandos mais populares\n"
+        ]
+
+        # Adiciona comandos populares
+        if estatisticas['comandos_populares']:
+            for comando, contagem in estatisticas['comandos_populares']:
+                conteudo.append(f"- {comando}: {contagem} consultas\n")
+        else:
+            conteudo.append("- Nenhum comando registrado\n")
+
+        conteudo.append("\n## Secções mais consultadas\n")
+        if estatisticas['seccoes_populares']:
+            for seccao, contagem in estatisticas['seccoes_populares']:
+                conteudo.append(f"- {seccao}: {contagem} consultas\n")
+        else:
+            conteudo.append("- Nenhuma secção registrada\n")
+
+        # Adiciona utilizadores ativos
+        conteudo.append("\n## Utilizadores mais ativos\n")
+        if estatisticas['utilizadores_ativos']:
+            for utilizador_id, nome, contagem in estatisticas['utilizadores_ativos']:
+                conteudo.append(f"- {nome} (ID: {utilizador_id}): {contagem} consultas\n")
+        else:
+            conteudo.append("- Nenhum utilizador registrado\n")
+
+        return conteudo
 
     async def gerar_grafico_comandos(self, admin_id=None):
         """
