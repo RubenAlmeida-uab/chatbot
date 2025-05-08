@@ -1,12 +1,10 @@
+import sys, os, discord
 from utils.admin_checker import is_env_admin
+from controller.user_commands import UserCommands
 from dotenv import load_dotenv
-import discord
 from discord.ext import commands
 from view.discord_view import DiscordView
 from utils.logger import bot_logger
-import sys
-import os
-
 
 # Configuração inicial do logger
 bot_logger.info("Iniciando configuração do bot...")
@@ -57,60 +55,17 @@ async def on_command_error(ctx, error):
         await ctx.send(f"Ocorreu um erro ao processar o comando: {str(error)}")
 
 
-# Comandos básicos
-@bot.command()
-async def uc(ctx):
-    await view.process_command(ctx, "uc")
+bot = commands.Bot(command_prefix='!', intents=intents)
+view = DiscordView(bot)
+controller = UserCommands(view)
+def register_command(name, func):
+    @bot.command(name=name)
+    async def cmd(ctx):
+        await func(ctx)
 
-@bot.command()
-async def competencias(ctx):
-    await view.process_command(ctx, "competencias")
-
-
-@bot.command()
-async def roteiro(ctx):
-    await view.process_command(ctx, "roteiro")
-
-
-@bot.command()
-async def metodologia(ctx):
-    await view.process_command(ctx, "metodologia")
-
-
-@bot.command()
-async def recursos(ctx):
-    await view.process_command(ctx, "recursos")
-
-
-@bot.command()
-async def calendario(ctx):
-    await view.process_command(ctx, "calendario")
-
-
-@bot.command()
-async def avaliacao(ctx):
-    await view.process_command(ctx, "avaliacao")
-
-
-@bot.command()
-async def exame(ctx):
-    await view.process_command(ctx, "exame")
-
-
-@bot.command()
-async def ia(ctx):
-    await view.process_command(ctx, "ia")
-
-
-@bot.command()
-async def estrutura(ctx):
-    await view.process_command(ctx, "estrutura")
-
-
-@bot.command()
-async def cartao(ctx):
-    await view.process_command(ctx, "cartao")
-
+# Registo dinâmico
+for name, func in controller.get_commands().items():
+    register_command(name, func)
 
 @bot.command()
 async def verificaradmin(ctx):

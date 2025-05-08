@@ -252,8 +252,6 @@ class DiscordView:
             color=discord.Color.blue()
         )
 
-        DESCRICAO_FIELD_NAME = "Descrição"
-
         if command_name in ["uc", "competencias", "roteiro", "metodologia", "recursos",
                             "calendario", "avaliacao", "exame", "ia", "estrutura", "cartao"]:
             embed.description = f"Mostra informações sobre {command_name} da unidade curricular"
@@ -267,19 +265,17 @@ class DiscordView:
                 embed.add_field(name="Uso", value=f"!{command_name}", inline=False)
             embed.add_field(name="Permissão", value="Apenas administradores", inline=False)
 
-            # Descrições específicas para cada comando admin
-            if command_name == "relatorio":
-                embed.add_field(name=DESCRICAO_FIELD_NAME, value="Gera um relatório completo de uso do bot em formato Markdown",
-                                inline=False)
-            elif command_name == "estatisticas":
-                embed.add_field(name=DESCRICAO_FIELD_NAME, value="Mostra um resumo das estatísticas de uso do bot", inline=False)
-            elif command_name == "historico":
-                embed.add_field(name=DESCRICAO_FIELD_NAME, value="Mostra o histórico de comandos de um utilizador específico",
-                                inline=False)
-            elif command_name == "grafico_comandos":
-                embed.add_field(name=DESCRICAO_FIELD_NAME, value="Gera um gráfico dos comandos mais utilizados", inline=False)
-            elif command_name == "grafico_seccoes":
-                embed.add_field(name=DESCRICAO_FIELD_NAME, value="Gera um gráfico das seções mais consultadas", inline=False)
+            command_decriptions = {
+                "relatorio": "Gera um relatório completo de uso do bot em formato Markdown",
+                "estatisticas": "Mostra um resumo das estatísticas de uso do bot",
+                "historico": "Mostra o histórico de comandos de um utilizador específico",
+                "grafico_comandos": "Gera um gráfico dos comandos mais utilizados",
+                "grafico_seccoes": "Gera um gráfico das seções mais consultadas"
+            }
+
+            descricao = command_decriptions.get(command_name)
+            if descricao:
+                embed.add_field(name="Descrição", value=descricao, inline=False)
 
         else:
             embed.description = "Comando não encontrado"
