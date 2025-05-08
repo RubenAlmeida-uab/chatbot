@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v4.0.0
+        uses: SonarSource/sonarcloud-github-action@master
         with:
           projectBaseDir: .
           args: >
