@@ -7,12 +7,15 @@ from utils.logger import bot_logger
 from utils.admin_checker import AdminChecker
 from model.consulta_model import ConsultaModel
 
+
+# noinspection SpellCheckingInspection
 class DiscordView:
     """
     Responsável pelo View.
     Apresentação de comandos e ficheiros para os utilizadores e administradores.
     """
 
+    # noinspection SpellCheckingInspection
     def __init__(self, bot):
         self.bot = bot
         self.controller = UserController()
@@ -21,7 +24,7 @@ class DiscordView:
         self.admin_checker = AdminChecker()
         self.consulta_model = ConsultaModel()
 
-        # Registra listeners do bot controller
+        # Regista listeners do bot controller
         self.bot.controller.adicionar_listener_estatisticas_acedidas(self._on_estatisticas_acedidas)
         self.bot.controller.adicionar_listener_relatorio_gerado(self._on_relatorio_gerado)
         self.bot.controller.adicionar_listener_grafico_gerado(self._on_grafico_gerado)

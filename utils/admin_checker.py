@@ -28,7 +28,7 @@ class AdminChecker:
             self._admin_ids = set()
 
     def is_admin(self, user_id: str) -> bool:
-        """Verifica se um usuário é admin pelo ID"""
+        """Verifica se um utilizador é admin pelo ID"""
         return str(user_id) in self._admin_ids
 
 # Decorador para usar nos comandos
