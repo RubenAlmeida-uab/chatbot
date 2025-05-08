@@ -1,3 +1,29 @@
+# ============================================================
+# bot.py - Projeto de "chatbot" educativo em Discord
+# ============================================================
+# Unidade Curricular:
+# Laboratório de Desenvolvimento de _Software_
+#
+# Autores:
+# 🔹 Duarte Grilo
+# 🔹 Rúben Almeida
+# 🔹 Sofia Semedo
+# 🔹 Yuran Eduardo
+# 🔹 Carlos Costa
+#
+# Objetivo:
+# Este ficheiro define e inicializa o _bot_ Discord, integrando os comandos
+# principais para interação com os utilizadores e funcionalidades de
+# administração e estatísticas.
+#
+# Funcionalidades:
+# 🔹 Comandos informativos sobre a unidade curricular
+# 🔹 Comandos administrativos com autenticação (".env" e permissões Discord)
+# 🔹 Geração de relatórios, gráficos e histórico
+# 🔹 Sistema de ajuda personalizado
+# 🔹 Registo de eventos e tratamento de erros
+# ============================================================
+
 import sys, os, discord
 from utils.admin_checker import is_env_admin
 from controller.user_commands import UserCommands
@@ -5,6 +31,10 @@ from dotenv import load_dotenv
 from discord.ext import commands
 from view.discord_view import DiscordView
 from utils.logger import bot_logger
+
+# ===============================
+# Inicialização do sistema
+# ===============================
 
 # Configuração inicial do logger
 bot_logger.info("Iniciando configuração do bot...")
@@ -27,6 +57,11 @@ try:
 except Exception as e:
     bot_logger.critical(f"Erro na configuração do bot: {str(e)}")
     sys.exit(1)
+
+
+# ===============================
+# Eventos base do bot
+# ===============================
 
 
 @bot.event
@@ -55,6 +90,11 @@ async def on_command_error(ctx, error):
         await ctx.send(f"Ocorreu um erro ao processar o comando: {str(error)}")
 
 
+# ===============================
+# Registo dinâmico de comandos
+# ===============================
+
+
 bot = commands.Bot(command_prefix='!', intents=intents)
 view = DiscordView(bot)
 controller = UserCommands(view)
@@ -66,6 +106,12 @@ def register_command(name, func):
 # Registo dinâmico
 for name, func in controller.get_commands().items():
     register_command(name, func)
+
+
+# ===============================
+# Comando de verificação admin
+# ===============================
+
 
 @bot.command()
 async def verificaradmin(ctx):
@@ -99,6 +145,11 @@ async def verificaradmin(ctx):
 
     await ctx.send(embed=embed)
     bot_logger.info(f"Verificação de admin realizada para {ctx.author.name} (ID: {ctx.author.id})")
+
+
+# ===============================
+# Comandos administrativos
+# ===============================
 
 
 #C omandos administrativos usando o decorador personalizado
@@ -159,6 +210,10 @@ async def grafico_seccoes(ctx):
     """Gera um gráfico das seções mais consultadas"""
     await view.process_command(ctx, "grafico_seccoes")
 
+# ===============================
+# Comando de ajuda personalizado
+# ===============================
+
 # Comandos de ajuda
 @bot.command()
 async def ajuda(ctx, command_name=None):
@@ -182,6 +237,11 @@ async def help(ctx, command_name=None):
         await view.process_command(ctx, "help")
 
 
+# ===============================
+# Tratamento de erros (admin)
+# ===============================
+
+
 # Tratamento de erros para comandos administrativos
 @relatorio.error
 @estatisticas.error
@@ -194,6 +254,11 @@ async def admin_command_error(ctx, error):
         await ctx.send("❌ Apenas administradores registados podem usar este comando.")
     else:
         await on_command_error(ctx, error)
+
+# ===============================
+# Execução do bot
+# ===============================
+
 
 try:
     bot_logger.info("Iniciando conexão com o Discord...")
