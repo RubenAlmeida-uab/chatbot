@@ -4,13 +4,6 @@
 # Unidade Curricular:
 # Laboratório de Desenvolvimento de _Software_
 #
-# Autores:
-# 🔹 Duarte Grilo
-# 🔹 Rúben Almeida
-# 🔹 Sofia Semedo
-# 🔹 Yuran Eduardo
-# 🔹 Carlos Costa
-#
 # Objetivo:
 # Executar testes manuais aos modelos de dados:
 # 🔹 ConsultaModel: registo e análise estatística
