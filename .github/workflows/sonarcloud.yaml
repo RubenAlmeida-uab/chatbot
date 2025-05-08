@@ -16,7 +16,9 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@master
         with:
           projectBaseDir: .
+          args: >
+            -Dsonar.projectKey=RubenAlmeida-uab_chatbot
+            -Dsonar.organization=rubenalmeida-uab
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          sonar.projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
-          sonar.organization: ${{ secrets.SONAR_ORGANIZATION }}
+          
