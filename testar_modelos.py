@@ -1,9 +1,32 @@
+# ============================================================
+# testar_modelos.py - Testes aos modelos de dados e estatísticas
+# ============================================================
+# Unidade Curricular:
+# Laboratório de Desenvolvimento de _Software_
+#
+# Autores:
+# 🔹 Duarte Grilo
+# 🔹 Rúben Almeida
+# 🔹 Sofia Semedo
+# 🔹 Yuran Eduardo
+# 🔹 Carlos Costa
+#
+# Objetivo:
+# Executar testes manuais aos modelos de dados:
+# 🔹 ConsultaModel: registo e análise estatística
+# 🔹 DadosModel: leitura de secções da unidade curricular
+# ============================================================
+
 from model.consulta_model import ConsultaModel
 from model.dados_model import DadosModel
 import os
 from datetime import datetime
 
-def testar_consulta_model():
+# ===============================
+# Teste ao modelo ConsultaModel
+# ===============================
+
+def testar_modelo_consulta():
     print("🔍 Teste: ConsultaModel")
 
     consulta = ConsultaModel()
@@ -26,7 +49,13 @@ def testar_consulta_model():
     else:
         print("⚠️ Ficheiro de estatísticas não encontrado.")
 
-def testar_dados_model():
+
+# ===============================
+# Teste ao modelo DadosModel
+# ===============================
+
+
+def testar_modelo_dados():
     print("\n🔍 Teste: DadosModel")
 
     dados = DadosModel()
@@ -43,6 +72,12 @@ def testar_dados_model():
     else:
         print("❌ A secção 'competencias' não foi encontrada.")
 
+
+# ===============================
+# Execução dos testes
+# ===============================
+
+
 if __name__ == "__main__":
-    testar_consulta_model()
-    testar_dados_model()
+    testar_modelo_consulta()
+    testar_modelo_dados()
