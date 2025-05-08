@@ -346,7 +346,7 @@ class DiscordView:
         bot_logger.error(f"Erro na operação {operacao} por admin {admin_id}: {mensagem_erro}")
 
 
-    def _formatar_resposta(seccao, dados):
+    def _formatar_resposta(self, seccao, dados):
         """Formata a resposta com base na secção e nos dados obtidos."""
         resposta = f"**{seccao.upper()}**\n\n"
         if isinstance(dados, str):
