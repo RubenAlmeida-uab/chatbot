@@ -7,8 +7,6 @@ from utils.logger import bot_logger
 from utils.admin_checker import AdminChecker
 from model.consulta_model import ConsultaModel
 
-# noinspection SpellCheckingInspection # REquisito para evitar erro de verificação de ortografia em produtos jetbrains
-
 class DiscordView:
     """
     Responsável pelo View.
