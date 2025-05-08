@@ -345,7 +345,7 @@ class DiscordView:
         """Handler para evento de erro."""
         bot_logger.error(f"Erro na operação {operacao} por admin {admin_id}: {mensagem_erro}")
 
-    @staticmethod
+
     def _formatar_resposta(seccao, dados):
         """Formata a resposta com base na secção e nos dados obtidos."""
         resposta = f"**{seccao.upper()}**\n\n"
