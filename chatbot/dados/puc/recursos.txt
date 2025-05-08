@@ -1,9 +1,0 @@
-# Recursos
-
-São recomendados os seguintes materiais:
-- Bibliografia base da unidade curricular
-- Ferramentas como GitHub, Trello e Visual Studio Code
-- Moodle e Fóruns UAb para apoio
-
-Q: Há tutoriais obrigatórios?
-A: Não, mas são fortemente recomendados.
