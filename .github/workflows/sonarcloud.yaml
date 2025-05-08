@@ -2,7 +2,7 @@
 name: SonarCloud
 on:
   push:
-    branches: [main]
+    branches: [main-melhorias]
   pull_request:
     branches: [main]
 
@@ -18,3 +18,5 @@ jobs:
           projectBaseDir: .
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          sonar.projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
+          sonar.organization: ${{ secrets.SONAR_ORGANIZATION }}
