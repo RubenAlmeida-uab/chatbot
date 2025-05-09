@@ -6,32 +6,6 @@
 - 👨‍🎓 Estudantes consultarem secções do programa da UC  
 - 👨‍💻 Administradores acederem a estatísticas, relatórios e gráficos de utilização  
 
-## 🏗️ Estilo arquitetónico: MVC
-chatbot/
-├── interfaces/
-│ ├── icontroller.py
-│ ├── ieventlistener.py
-│ ├── imodel.py
-│ └── iview.py
-├── model/
-│ ├── dados_model.py
-│ └── consulta_model.py
-├── controller/
-│ ├── bot_controller.py
-│ ├── user_controller.py
-│ └── user_commands.py
-├── view/
-│ ├── bot_view.py
-│ └── discord_view.py
-├── utils/
-├── dados/
-├── estatisticas/
-├── logs/
-├── bot.py
-├── requirements.txt
-└── README.md
-
-
 
 ## 🚀 Instalação
 
@@ -50,7 +24,9 @@ DISCORD_TOKEN=seu_token_aqui
 
 
 🎯 Comandos
+
 👨‍🎓 Estudantes
+
 !uc - Informações gerais
 
 !competencias - Competências
@@ -74,6 +50,7 @@ DISCORD_TOKEN=seu_token_aqui
 !cartao - Cartão de aprendizagem
 
 👨‍💻 Administradores
+
 !relatorio - Gera relatório
 
 !estatisticas - Mostra analytics
@@ -81,6 +58,8 @@ DISCORD_TOKEN=seu_token_aqui
 !historico - Consulta utilizador
 
 ❓ Ajuda
+
+
 !help - Lista comandos
 
 !help [comando] - Ajuda específica
@@ -88,6 +67,7 @@ DISCORD_TOKEN=seu_token_aqui
 !ajuda - Alternativa a help
 
 ⭐ Responsabilidades da Equipa ⭐
+
 ⭐ Rúben - Líder
 
 ⭐ Duarte - Model
