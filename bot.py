@@ -2,8 +2,10 @@
 # bot.py - Projeto de "chatbot" educativo em Discord
 # ============================================================
 
-
-import sys, os, discord
+import sys
+import os
+import discord
+import functools
 from utils.admin_checker import is_env_admin
 from controller.user_commands import UserCommands
 from dotenv import load_dotenv
@@ -27,7 +29,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 view = DiscordView(bot)
 controller = UserCommands(view)
 
-""" Remover o comando help padrão e usar nosso próprio"""
+""" Remover o comando help padrão"""
 bot.remove_command('help')
 
 
@@ -76,28 +78,45 @@ async def on_command_error(ctx, error):
         bot_logger.error(f"Erro ao processar comando: {error}")
 
 
+# === Decorador para tratamento de erros em comandos ===
+
+def comando_seguro(func):
+    """
+    Decorador para tratar erros em comandos do bot de forma uniforme.   
+    """
+    @functools.wraps(func)
+    async def wrapper(ctx, *args, **kwargs):
+        try:
+            return await func(ctx, *args, **kwargs)
+        except Exception as e:
+            comando = func.__name__
+            bot_logger.error(f"Erro ao processar comando {comando}: {str(e)}")
+            await ctx.send(f"Erro ao processar o comando: {str(e)}")
+    return wrapper
+
+
 # === Registo dinâmico de comandos ===
 
-
 def register_command(name, func):
+    """
+    Regista um comando no bot com tratamento de erros integrado.
+    """
     @bot.command(name=name)
+    @comando_seguro
     async def cmd(ctx):
-        try:
-            await func(ctx)
-        except Exception as e:
-            bot_logger.error(f"Erro ao processar comando {name}: {str(e)}")
-            await ctx.send(f"Erro ao processar o comando: {str(e)}")
+        await func(ctx)
 
+# Registar comandos do controlador
 for name, func in controller.get_commands().items():
     register_command(name, func)
 
 
 # === Comando de verificação admin ===
 
-
 @bot.command()
+@comando_seguro
 async def verificaradmin(ctx):
-    """Verifica o status de administrador do usuário"""
+    """Verifica o status do admin ou utilizador"""
     is_discord_admin = ctx.author.guild_permissions.administrator
     is_env_admin = view.admin_checker.is_admin(str(ctx.author.id))
 
@@ -108,7 +127,7 @@ async def verificaradmin(ctx):
     )
 
     embed.add_field(
-        name="ID do Usuário",
+        name="ID do Utilizador",
         value=str(ctx.author.id),
         inline=False
     )
@@ -131,106 +150,83 @@ async def verificaradmin(ctx):
 
 # === Comandos administrativos ===
 
-
 @bot.command()
 @is_env_admin()
+@comando_seguro
 async def relatorio(ctx):
     """Gera um relatório completo de uso do bot"""
-    try:
-        await view.process_command(ctx, "relatorio")
-    except Exception as e:
-        bot_logger.error(f"Erro ao processar comando relatorio: {str(e)}")
-        await ctx.send(f"Erro ao processar o comando: {str(e)}")
+    await view.process_command(ctx, "relatorio")
 
 @bot.command()
 @is_env_admin()
+@comando_seguro
 async def estatisticas(ctx):
     """Mostra estatísticas de uso do bot"""
-    try:
-        await view.process_command(ctx, "estatisticas")
-    except Exception as e:
-        bot_logger.error(f"Erro ao processar comando estatisticas: {str(e)}")
-        await ctx.send(f"Erro ao processar o comando: {str(e)}")
+    await view.process_command(ctx, "estatisticas")
 
 @bot.command()
 @is_env_admin()
+@comando_seguro
 async def historico(ctx, user: discord.Member):
-    """Mostra o histórico de comandos de um usuário específico."""
-    try:
-        historico = view.consulta_model.obter_historico_utilizador(str(user.id))
+    """Mostra o histórico de comandos de um utilizador específico."""
+    historico = view.consulta_model.obter_historico_utilizador(str(user.id))
 
-        if not historico:
-            await ctx.send(f"❌ Nenhum histórico encontrado para o usuário {user.name}.")
-            return
+    if not historico:
+        await ctx.send(f"❌ Nenhum histórico encontrado para o utilizador {user.name}.")
+        return
 
-        embed = discord.Embed(
-            title=f"Histórico de Comandos de {user.name}",
-            description=f"Total de consultas: **{len(historico)}**",
-            color=discord.Color.green()
+    embed = discord.Embed(
+        title=f"Histórico de Comandos de {user.name}",
+        description=f"Total de consultas: **{len(historico)}**",
+        color=discord.Color.green()
+    )
+
+    for consulta in historico[-10:]:  # Mostra os últimos 10 registros
+        data = consulta["data"].split("T")[0] if "T" in consulta["data"] else consulta["data"].split(" ")[0]
+        comando = consulta["comando"]
+        secao = consulta["secao"] if consulta["secao"] else "Nenhuma secção"
+        embed.add_field(
+            name=f"{data} - {comando}",
+            value=f"Secção: {secao}",
+            inline=False
         )
 
-        for consulta in historico[-10:]:  # Mostra os últimos 10 registros
-            data = consulta["data"].split("T")[0] if "T" in consulta["data"] else consulta["data"].split(" ")[0]
-            comando = consulta["comando"]
-            secao = consulta["secao"] if consulta["secao"] else "Nenhuma seção"
-            embed.add_field(
-                name=f"{data} - {comando}",
-                value=f"Seção: {secao}",
-                inline=False
-            )
-
-        await ctx.send(embed=embed)
-    except Exception as e:
-        bot_logger.error(f"Erro ao processar comando historico: {str(e)}")
-        await ctx.send(f"Erro ao processar o comando: {str(e)}")
+    await ctx.send(embed=embed)
 
 @bot.command()
 @is_env_admin()
+@comando_seguro
 async def grafico_comandos(ctx):
     """Gera um gráfico dos comandos mais utilizados"""
-    try:
-        await view.process_command(ctx, "grafico_comandos")
-    except Exception as e:
-        bot_logger.error(f"Erro ao processar comando grafico_comandos: {str(e)}")
-        await ctx.send(f"Erro ao processar o comando: {str(e)}")
+    await view.process_command(ctx, "grafico_comandos")
 
 @bot.command()
 @is_env_admin()
+@comando_seguro
 async def grafico_seccoes(ctx):
     """Gera um gráfico das seções mais consultadas"""
-    try:
-        await view.process_command(ctx, "grafico_seccoes")
-    except Exception as e:
-        bot_logger.error(f"Erro ao processar comando grafico_seccoes: {str(e)}")
-        await ctx.send(f"Erro ao processar o comando: {str(e)}")
+    await view.process_command(ctx, "grafico_seccoes")
 
 
-# === Comando de ajuda ===
-
+# === Comandos de ajuda personalizados ===
 
 @bot.command()
+@comando_seguro
 async def ajuda(ctx, command_name=None):
     """Comando alternativo de ajuda para evitar conflito com o help padrão"""
-    try:
-        if command_name:
-            await view.process_command(ctx, "help", command_name)
-        else:
-            await view.process_command(ctx, "help")
-    except Exception as e:
-        bot_logger.error(f"Erro ao processar comando ajuda: {str(e)}")
-        await ctx.send(f"Erro ao processar o comando: {str(e)}")
+    if command_name:
+        await view.process_command(ctx, "help", command_name)
+    else:
+        await view.process_command(ctx, "help")
 
 @bot.command()
+@comando_seguro
 async def help(ctx, command_name=None):
     """Comando de ajuda personalizado"""
-    try:
-        if command_name:
-            await view.process_command(ctx, "help", command_name)
-        else:
-            await view.process_command(ctx, "help")
-    except Exception as e:
-        bot_logger.error(f"Erro ao processar comando help: {str(e)}")
-        await ctx.send(f"Erro ao processar o comando: {str(e)}")
+    if command_name:
+        await view.process_command(ctx, "help", command_name)
+    else:
+        await view.process_command(ctx, "help")
 
 
 # === Execução do bot ===
