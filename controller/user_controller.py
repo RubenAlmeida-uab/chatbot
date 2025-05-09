@@ -1,9 +1,11 @@
+
 from model.dados_model import DadosModel
 from model.consulta_model import ConsultaModel
 from utils.logger import bot_logger
+from interfaces import IController
 
 
-class UserController:
+class UserController(IController):
     """
     Controlador para gerir as interações dos utilizadores com o chatbot.
     """
@@ -20,39 +22,35 @@ class UserController:
             "calendario", "avaliacao", "exame", "ia", "estrutura", "cartao"]
 
         # Listeners para eventos do controlador
-        self.listeners_comando_processado = []  # Eventos para quando um comando é processado
-        self.listeners_seccao_acedida = []  # Eventos para quando uma secção é acedida
-        self.listeners_erro = []  # Eventos para quando ocorre um erro
+        self.listeners_comando_processado = []
+        self.listeners_seccao_acedida = []
+        self.listeners_erro = []
 
-    # === Métodos para gerir eventos ===
+    # === Métodos da interface IController ===
 
-    def adicionar_listener_comando_processado(self, listener):
+    def adicionar_listener(self, tipo_evento, listener):
         """
-        Adiciona um listener para eventos de processamento de comandos.
+        Adiciona um listener para um tipo específico de evento.
+        Implementação da interface IController.
+        
         """
-        self.listeners_comando_processado.append(listener)
-        self.logger.debug(
-            f"Listener adicionado para comando processado: {listener.__name__ if hasattr(listener, '__name__') else 'anônimo'}")
-
-    def adicionar_listener_seccao_acedida(self, listener):
-        """
-        Adiciona um listener para eventos de acesso a secções.
-        """
-        self.listeners_seccao_acedida.append(listener)
-        self.logger.debug(
-            f"Listener adicionado para secção acedida: {listener.__name__ if hasattr(listener, '__name__') else 'anônimo'}")
-
-    def adicionar_listener_erro(self, listener):
-        """
-        Adiciona um listener para eventos de erro.
-        """
-        self.listeners_erro.append(listener)
-        self.logger.debug(
-            f"Listener adicionado para erro: {listener.__name__ if hasattr(listener, '__name__') else 'anônimo'}")
+        if tipo_evento == "comando_processado":
+            self.listeners_comando_processado.append(listener)
+            self.logger.debug(f"Listener adicionado para comando processado: {listener.__name__ if hasattr(listener, '__name__') else 'anónimo'}")
+        elif tipo_evento == "seccao_acedida":
+            self.listeners_seccao_acedida.append(listener)
+            self.logger.debug(f"Listener adicionado para secção acedida: {listener.__name__ if hasattr(listener, '__name__') else 'anónimo'}")
+        elif tipo_evento == "erro":
+            self.listeners_erro.append(listener)
+            self.logger.debug(f"Listener adicionado para erro: {listener.__name__ if hasattr(listener, '__name__') else 'anónimo'}")
+        else:
+            raise ValueError(f"Tipo de evento não suportado: {tipo_evento}")
 
     def remover_listener(self, listener):
         """
         Remove um listener de todas as listas de eventos.
+        Implementação da interface IController.
+        
         """
         removed = False
         if listener in self.listeners_comando_processado:
@@ -66,13 +64,62 @@ class UserController:
             removed = True
 
         if removed:
-            self.logger.debug(f"Listener removido: {listener.__name__ if hasattr(listener, '__name__') else 'anônimo'}")
+            self.logger.debug(f"Listener removido: {listener.__name__ if hasattr(listener, '__name__') else 'anónimo'}")
+
+    def processar_comando(self, utilizador_id, utilizador_nome, comando, seccao=None):
+        """
+        Processa um comando recebido pela View.
+        Implementação da interface IController.
+        
+        """
+        self.logger.info(f"Recebido comando '{comando}' de {utilizador_nome} (ID: {utilizador_id})")
+
+        # Lista de comandos válidos que este controlador pode processar
+        if comando in self.comandos_validos:
+            # Regista a consulta no modelo - este é o ponto central e único para registro de consultas
+            self.logger.debug(f"A registar consulta para comando '{comando}' de {utilizador_nome}")
+            self.consulta_model.registar_consulta(utilizador_id, utilizador_nome, comando, seccao)
+
+            # Processa o comando e obtém a resposta
+            resposta = self.obter_resposta(utilizador_id, utilizador_nome, comando, seccao)
+            return resposta
+        else:
+            self.logger.debug(f"Comando '{comando}' não é processado por este controlador")
+            return None  # Indica que este controlador não processou o comando
+
+    # === Métodos para compatibilidade com código existente ===
+    # mantidos para compatibilidade e redirecionam para o método da interface
+
+    def adicionar_listener_comando_processado(self, listener):
+        """
+        Adiciona um listener para eventos de processamento de comandos.
+        Redireciona para o método da interface para evitar duplicação.
+        
+        """
+        self.adicionar_listener("comando_processado", listener)
+
+    def adicionar_listener_seccao_acedida(self, listener):
+        """
+        Adiciona um listener para eventos de acesso a secções.
+        Redireciona para o método da interface para evitar duplicação.
+        
+        """
+        self.adicionar_listener("seccao_acedida", listener)
+
+    def adicionar_listener_erro(self, listener):
+        """
+        Adiciona um listener para eventos de erro.
+        Redireciona para o método da interface para evitar duplicação.
+        
+        """
+        self.adicionar_listener("erro", listener)
 
     # === Métodos para emitir eventos ===
 
     def _notificar_comando_processado(self, utilizador_id, utilizador_nome, comando, seccao, sucesso):
         """
         Notifica todos os listeners de processamento de comandos.
+        
         """
         if sucesso:
             self.logger.info(f"Comando '{comando}' processado com sucesso para {utilizador_nome} (ID: {utilizador_id})")
@@ -89,6 +136,7 @@ class UserController:
     def _notificar_seccao_acedida(self, utilizador_id, seccao, dados):
         """
         Notifica todos os listeners de acesso a secções.
+        
         """
         self.logger.info(f"Secção '{seccao}' acedida pelo utilizador {utilizador_id}")
         for listener in self.listeners_seccao_acedida:
@@ -100,6 +148,7 @@ class UserController:
     def _notificar_erro(self, utilizador_id, comando, seccao, mensagem_erro):
         """
         Notifica todos os listeners de erro.
+       
         """
         self.logger.error(f"Erro ao processar comando '{comando}' para utilizador {utilizador_id}: {mensagem_erro}")
         for listener in self.listeners_erro:
@@ -108,34 +157,15 @@ class UserController:
             except Exception as e:
                 self.logger.critical(f"Erro ao notificar listener de erro: {e}")
 
-    def processar_comando(self, utilizador_id, utilizador_nome, comando, seccao=None):
-        """
-        Processa um comando recebido pela View.
-        """
-        self.logger.info(f"Recebido comando '{comando}' de {utilizador_nome} (ID: {utilizador_id})")
-
-        # Lista de comandos válidos que este controlador pode processar
-        if comando in self.comandos_validos:
-            # IMPORTANTE: Registra a consulta no modelo primeiro, independentemente do resultado
-            # Este é o ponto crítico para garantir que as estatísticas sejam registradas
-            self.logger.debug(f"Registrando consulta para comando '{comando}' de {utilizador_nome}")
-            self.consulta_model.registar_consulta(utilizador_id, utilizador_nome, comando, seccao)
-
-            # Processa o comando e obtém a resposta
-            resposta = self.obter_resposta(utilizador_id, utilizador_nome, comando, seccao)
-            return resposta
-        else:
-            self.logger.debug(f"Comando '{comando}' não é processado por este controlador")
-            return None  # Indica que este controlador não processou o comando
-
     def obter_resposta(self, utilizador_id, utilizador_nome, comando, seccao=None):
         """
         Obtém uma resposta para o comando do utilizador.
+        
         """
         try:
             # Processa o comando e obtém a resposta
             if seccao:
-                self.logger.debug(f"Buscando secção '{seccao}' para comando '{comando}'")
+                self.logger.debug(f"A procurar secção '{seccao}' para comando '{comando}'")
                 dados_seccao = self.dados_model.obter_seccao(seccao.lower())
                 if dados_seccao:
                     # Notifica listeners que uma secção foi acedida com sucesso
@@ -158,7 +188,7 @@ class UserController:
             else:
                 # Comando para listar todas as secções
                 if comando == "listar_seccoes":
-                    self.logger.debug("Listando todas as secções disponíveis")
+                    self.logger.debug("A listar todas as secções disponíveis")
                     seccoes = self.dados_model.obter_todas_seccoes()
 
                     # Notifica que o comando foi processado com sucesso
@@ -167,22 +197,30 @@ class UserController:
                     return "**Secções disponíveis no PUC:**\n" + "\n".join([f"- {seccao}" for seccao in seccoes])
                 # Comando de ajuda
                 elif comando == "ajuda":
-                    self.logger.debug("Fornecendo mensagem de ajuda")
+                    self.logger.debug("A fornecer mensagem de ajuda")
                     # Notifica que o comando foi processado com sucesso
                     self._notificar_comando_processado(utilizador_id, utilizador_nome, comando, None, True)
 
                     return self._obter_ajuda()
                 # Comando UC
-                #elif comando == "uc":
-                #    self.logger.debug("Fornecendo visão geral da UC")
-                #    # Notifica que o comando foi processado com sucesso
-                #    self._notificar_comando_processado(utilizador_id, utilizador_nome, comando, None, True)
-#
-                #    #return self._obter_puc_geral()
+                elif comando == "uc":
+                    self.logger.debug("A fornecer visão geral da UC")
+                    # Carrega o conteúdo do ficheiro da UC
+                    dados_uc = self.dados_model.obter_seccao("uc")
+                    if dados_uc:
+                        # Notifica que o comando foi processado com sucesso
+                        self._notificar_comando_processado(utilizador_id, utilizador_nome, comando, None, True)
+                        
+                        return dados_uc
+                    else:
+                        erro_msg = "Ficheiro 'uc.txt' não encontrado"
+                        self.logger.warning(erro_msg)
+                        self._notificar_erro(utilizador_id, comando, None, erro_msg)
+                        
+                        return "Desculpe, não foi possível encontrar informações gerais sobre a UC."
                 # Outros comandos específicos sem secção
                 elif comando in self.comandos_validos:
-
-                    self.logger.debug(f"Tratando comando '{comando}' como secção")
+                    self.logger.debug(f"A tratar comando '{comando}' como secção")
                     # Trata o comando como se fosse uma secção
                     return self.obter_resposta(utilizador_id, utilizador_nome, "uc", comando)
                 # Comando não reconhecido
@@ -207,3 +245,5 @@ class UserController:
 
             # Retorna mensagem de erro genérica
             return "Ocorreu um erro ao processar o seu comando. Por favor, tente novamente mais tarde."
+
+    
