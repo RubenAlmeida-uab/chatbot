@@ -70,10 +70,10 @@
 
 ⭐ Rúben - Líder
 
-⭐ Duarte - Model
+⭐ Duarte - Dev
 
-⭐ Sofia - Controller
+⭐ Sofia - Dev
 
-⭐ Yuran - View
+⭐ Yuran - Dev
 
 ⭐ Carlos - Tester
