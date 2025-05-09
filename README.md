@@ -1,23 +1,37 @@
 # Chatbot MVC com Bot do Discord
 
 
-Este é um chatbot Discord implementado usando o padrão MVC (Model-View-Controller).
+Bot LDS é um chatbot para o Discord, projetado para facilitar o acesso a informações sobre uma unidade curricular. O sistema permite que estudantes consultem secções específicas do programa da UC, enquanto administradores podem aceder a estatísticas, relatórios e gráficos de utilização.
 
 ## Estrutura do Projeto
 
+O projeto implementado segue o estilo arquitetónico MVC (Model-View-Controller)
+
 ```
-.
-├── bot.py              # Arquivo principal do bot
-├── controller/         # Camada de Controller
-├── model/             # Camada de Model
-├── view/              # Camada de View
-├── utils/             # Utilitários
-│   └── logger.py     # Sistema de logging
-├── dados/            # Dados do chatbot
-│   └── puc/         # Informações da UC
-└── logs/            # Logs do sistema
-=======
-![alt text](image.png)
+├── interfaces/
+│   ├── icontroller.py
+│   ├── ieventlistener.py
+│   ├── imodel.py
+│   └── iview.py
+├── model/
+│   ├── dados_model.py
+│   └── consulta_model.py
+├── controller/
+│   ├── bot_controller.py
+│   |── user_controller.py
+|   |── user_commands.py
+├── view/
+│   ├── bot_view.py
+│   └── discord_view.py
+|── utils/ 
+|── dados/
+|── estatisticas/
+|── logs/   
+├── bot.py   
+|── requirements.txt          
+└── README.md/
+  
+´´´         
 
 Instalar os requirements:
 
