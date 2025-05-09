@@ -23,7 +23,7 @@
 `python bot.py `
 
 
-🎯 Comandos
+## 🎯 Comandos
 
 👨‍🎓 Estudantes
 
