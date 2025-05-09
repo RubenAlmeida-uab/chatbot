@@ -31,7 +31,7 @@ O projeto implementado segue o estilo arquitetónico MVC (Model-View-Controller)
 |── requirements.txt          
 └── README.md/
   
-´´´         
+´      
 
 Instalar os requirements:
 
@@ -77,7 +77,6 @@ O sistema de logs foi implementado para facilitar o debug e monitoramento do bot
 
 1. Crie um arquivo `.env` com seu token do Discord:
 ```
-
 DISCORD_TOKEN=seu_token_aqui
 ```
 
@@ -87,7 +86,7 @@ pip install -r requirements.txt
 ```
 
 3. Execute o bot:
-```bash
+```
 python bot.py
 ```
 
