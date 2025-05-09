@@ -67,7 +67,8 @@ async def on_message(message):
 """Tratamento de erros gerais"""
 @bot.event
 async def on_command_error(ctx, error):
-    if isinstance(error, commands.CommandNotFound):       
+    if isinstance(error, commands.CommandNotFound): 
+        #tratado pelo evento on_message
         pass
     elif isinstance(error, commands.MissingRequiredArgument):
         await ctx.send(f"Faltam argumentos para este comando. Use !help {ctx.command} para mais informações.")
