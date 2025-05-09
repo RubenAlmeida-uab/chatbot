@@ -11,7 +11,7 @@
 
 1. Crie um arquivo `.env` com seu token do Discord:
 
-DISCORD_TOKEN=seu_token_aqui
+`DISCORD_TOKEN=seu_token_aqui`
 
 
 2. Instale as dependências:
