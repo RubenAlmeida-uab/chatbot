@@ -99,5 +99,4 @@ python bot.py
 - **View (Yuran)**: Interface Discord, comandos e apresentação
 - **Tester (Carlos)**: Testes funcionais e validação
 =======
-pip install -r requirements-testes.txt
-```
+
