@@ -7,7 +7,6 @@
 - 👨‍💻 Administradores acederem a estatísticas, relatórios e gráficos de utilização  
 
 ## 🏗️ Estilo arquitetónico: MVC
-
 chatbot/
 ├── interfaces/
 │ ├── icontroller.py
@@ -40,20 +39,16 @@ chatbot/
 
 DISCORD_TOKEN=seu_token_aqui
 
-javascript
-Copiar
-Editar
 
 2. Instale as dependências:
 
-```
-pip install -r requirements.txt
-Execute o bot:
+`pip install -r requirements.txt `
 
-bash
-Copiar
-Editar
-python bot.py
+3. Execute o bot:
+
+`python bot.py `
+
+
 🎯 Comandos
 👨‍🎓 Estudantes
 !uc - Informações gerais
