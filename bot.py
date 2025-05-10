@@ -24,7 +24,7 @@
 # 🔹 Registo de eventos e tratamento de erros
 # ============================================================
 
-import sys, os, discord
+import sys, os, discord, functools
 from utils.admin_checker import is_env_admin
 from controller.user_commands import UserCommands
 from dotenv import load_dotenv
@@ -53,16 +53,14 @@ try:
     intents.message_content = True
     bot = commands.Bot(command_prefix='!', intents=intents)
     view = DiscordView(bot)
+    controller = UserCommands(view)
     bot_logger.info("Bot configurado com sucesso")
 except Exception as e:
     bot_logger.critical(f"Erro na configuração do bot: {str(e)}")
     sys.exit(1)
 
 
-# ===============================
-# Eventos base do bot
-# ===============================
-
+# === Eventos base do bot ===
 
 @bot.event
 async def on_ready():
@@ -73,49 +71,80 @@ async def on_ready():
     bot_logger.info(f'Conectado em {len(bot.guilds)} servidores')
     print(f'{bot.user} está online!')
 
+""" Tratamento personalizado de mensagens para intercetar comandos desconhecidos"""
+@bot.event
+async def on_message(message):
+    # Ignora mensagens do próprio bot
+    if message.author == bot.user:
+        return
 
+    # Verificar se é um comando (começa com !)
+    if message.content.startswith('!'):
+        command_name = message.content[1:].split()[0].lower()
+
+        # Verificar se o comando existe
+        if command_name not in [c.name for c in bot.commands]:
+            # Enviar mensagem para comandos desconhecidos
+            await message.channel.send(f"O comando `!{command_name}` não foi reconhecido. Digite `!ajuda` para ver os comandos disponíveis.")
+            return
+
+    # Processar o comando normalmente
+    await bot.process_commands(message)
+
+"""Tratamento de erros gerais"""
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
-        bot_logger.warning(f"Comando não encontrado: {ctx.message.content}")
-        await ctx.send("Comando não encontrado. Use !help para ver os comandos disponíveis.")
+        #tratado pelo evento on_message
+        pass
     elif isinstance(error, commands.MissingRequiredArgument):
-        bot_logger.warning(f"Argumentos faltando no comando: {ctx.message.content}")
-        await ctx.send("Argumentos faltando. Use !help <comando> para ver como usar este comando.")
-    elif isinstance(error, commands.MemberNotFound):
-        bot_logger.warning(f"Membro não encontrado: {ctx.message.content}")
-        await ctx.send("Usuário não encontrado. Certifique-se de mencionar um usuário válido.")
+        await ctx.send(f"Faltam argumentos para este comando. Use !help {ctx.command} para mais informações.")
+    elif isinstance(error, commands.CheckFailure):
+        await ctx.send("Você não tem permissão para usar este comando.")
     else:
-        bot_logger.error(f"Erro ao processar comando: {str(error)}")
-        await ctx.send(f"Ocorreu um erro ao processar o comando: {str(error)}")
+        await ctx.send(f"Ocorreu um erro ao processar o comando: {error}")
+        bot_logger.error(f"Erro ao processar comando: {error}")
 
 
-# ===============================
-# Registo dinâmico de comandos
-# ===============================
+# === Decorador para tratamento de erros em comandos ===
+
+def comando_seguro(func):
+    """
+    Decorador para tratar erros em comandos do bot de forma uniforme.
+    """
+    @functools.wraps(func)
+    async def wrapper(ctx, *args, **kwargs):
+        try:
+            return await func(ctx, *args, **kwargs)
+        except Exception as e:
+            comando = func.__name__
+            bot_logger.error(f"Erro ao processar comando {comando}: {str(e)}")
+            await ctx.send(f"Erro ao processar o comando: {str(e)}")
+    return wrapper
 
 
-bot = commands.Bot(command_prefix='!', intents=intents)
-view = DiscordView(bot)
-controller = UserCommands(view)
+# === Registo dinâmico de comandos ===
+
 def register_command(name, func):
+    """
+    Regista um comando no bot com tratamento de erros integrado.
+    """
     @bot.command(name=name)
+    @comando_seguro
     async def cmd(ctx):
         await func(ctx)
 
-# Registo dinâmico
+# Registar comandos do controlador
 for name, func in controller.get_commands().items():
     register_command(name, func)
 
 
-# ===============================
-# Comando de verificação admin
-# ===============================
-
+# === Comando de verificação admin ===
 
 @bot.command()
+@comando_seguro
 async def verificaradmin(ctx):
-    """Verifica o status de administrador do usuário"""
+    """Verifica o status do admin ou utilizador"""
     is_discord_admin = ctx.author.guild_permissions.administrator
     is_env_admin = view.admin_checker.is_admin(str(ctx.author.id))
 
@@ -126,20 +155,20 @@ async def verificaradmin(ctx):
     )
 
     embed.add_field(
-        name="ID do Usuário",
+        name="ID do Utilizador",
         value=str(ctx.author.id),
         inline=False
     )
 
     embed.add_field(
         name="Admin por Permissão Discord",
-        value="✅ Sim" if is_discord_admin else " Não",
+        value="✅ Sim" if is_discord_admin else "❌ Não",
         inline=True
     )
 
     embed.add_field(
         name="Admin por Configuração (.env)",
-        value=" Sim" if is_env_admin else "Não",
+        value="✅ Sim" if is_env_admin else "❌ Não",
         inline=True
     )
 
@@ -147,34 +176,31 @@ async def verificaradmin(ctx):
     bot_logger.info(f"Verificação de admin realizada para {ctx.author.name} (ID: {ctx.author.id})")
 
 
-# ===============================
-# Comandos administrativos
-# ===============================
+# === Comandos administrativos ===
 
-
-#C omandos administrativos usando o decorador personalizado
 @bot.command()
 @is_env_admin()
+@comando_seguro
 async def relatorio(ctx):
     """Gera um relatório completo de uso do bot"""
     await view.process_command(ctx, "relatorio")
 
-
 @bot.command()
 @is_env_admin()
+@comando_seguro
 async def estatisticas(ctx):
     """Mostra estatísticas de uso do bot"""
     await view.process_command(ctx, "estatisticas")
 
-
 @bot.command()
 @is_env_admin()
+@comando_seguro
 async def historico(ctx, user: discord.Member):
-    """Mostra o histórico de comandos de um usuário específico."""
+    """Mostra o histórico de comandos de um utilizador específico."""
     historico = view.consulta_model.obter_historico_utilizador(str(user.id))
 
     if not historico:
-        await ctx.send(f"❌ Nenhum histórico encontrado para o usuário {user.name}.")
+        await ctx.send(f"❌ Nenhum histórico encontrado para o utilizador {user.name}.")
         return
 
     embed = discord.Embed(
@@ -184,38 +210,36 @@ async def historico(ctx, user: discord.Member):
     )
 
     for consulta in historico[-10:]:  # Mostra os últimos 10 registros
-        data = consulta["data"].split("T")[0]  # Só pega a data sem hora
+        data = consulta["data"].split("T")[0] if "T" in consulta["data"] else consulta["data"].split(" ")[0]
         comando = consulta["comando"]
-        secao = consulta["secao"] if consulta["secao"] else "Nenhuma seção"
+        secao = consulta["secao"] if consulta["secao"] else "Nenhuma secção"
         embed.add_field(
             name=f"{data} - {comando}",
-            value=f"Seção: {secao}",
+            value=f"Secção: {secao}",
             inline=False
         )
 
     await ctx.send(embed=embed)
 
-
-
 @bot.command()
 @is_env_admin()
+@comando_seguro
 async def grafico_comandos(ctx):
     """Gera um gráfico dos comandos mais utilizados"""
     await view.process_command(ctx, "grafico_comandos")
 
-
 @bot.command()
 @is_env_admin()
+@comando_seguro
 async def grafico_seccoes(ctx):
     """Gera um gráfico das seções mais consultadas"""
     await view.process_command(ctx, "grafico_seccoes")
 
-# ===============================
-# Comando de ajuda personalizado
-# ===============================
 
-# Comandos de ajuda
+# === Comandos de ajuda personalizados ===
+
 @bot.command()
+@comando_seguro
 async def ajuda(ctx, command_name=None):
     """Comando alternativo de ajuda para evitar conflito com o help padrão"""
     if command_name:
@@ -223,12 +247,7 @@ async def ajuda(ctx, command_name=None):
     else:
         await view.process_command(ctx, "help")
 
-
-# Remover o comando help padrão e usar nosso próprio
-bot.remove_command('help')
-
-
-@bot.command()
+@comando_seguro
 async def help(ctx, command_name=None):
     """Comando de ajuda personalizado"""
     if command_name:
@@ -258,7 +277,6 @@ async def admin_command_error(ctx, error):
 # ===============================
 # Execução do bot
 # ===============================
-
 
 try:
     bot_logger.info("Iniciando conexão com o Discord...")

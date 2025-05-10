@@ -6,9 +6,10 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import discord
 from model.consulta_model import ConsultaModel
+from interfaces import IController
 
 
-class BotController:
+class BotController(IController):
     """
     Controlador para gerir as funções administrativas do bot.
     """
@@ -20,40 +21,31 @@ class BotController:
         self.consulta_model = ConsultaModel()
 
         # Listeners para eventos do controlador
-        self.listeners_estatisticas_acedidas = []  # Eventos para quando estatísticas são acedidas
-        self.listeners_relatorio_gerado = []  # Eventos para quando relatórios são gerados
-        self.listeners_grafico_gerado = []  # Eventos para quando gráficos são gerados
-        self.listeners_erro = []  # Eventos para quando ocorre um erro
+        self.listeners_estatisticas_acedidas = []
+        self.listeners_relatorio_gerado = []
+        self.listeners_grafico_gerado = []
+        self.listeners_erro = []
 
-    # === Métodos para gerir eventos ===
+    # === Métodos da interface IController ===
 
-    def adicionar_listener_estatisticas_acedidas(self, listener):
+    def adicionar_listener(self, tipo_evento, listener):
         """
-        Adiciona um listener para eventos de acesso a estatísticas.
+        Adiciona um listener para um tipo específico de evento.                
         """
-        self.listeners_estatisticas_acedidas.append(listener)
-
-    def adicionar_listener_relatorio_gerado(self, listener):
-        """
-        Adiciona um listener para eventos de geração de relatórios.
-        """
-        self.listeners_relatorio_gerado.append(listener)
-
-    def adicionar_listener_grafico_gerado(self, listener):
-        """
-        Adiciona um listener para eventos de geração de gráficos.
-        """
-        self.listeners_grafico_gerado.append(listener)
-
-    def adicionar_listener_erro(self, listener):
-        """
-        Adiciona um listener para eventos de erro.
-        """
-        self.listeners_erro.append(listener)
+        if tipo_evento == "estatisticas_acedidas":
+            self.listeners_estatisticas_acedidas.append(listener)
+        elif tipo_evento == "relatorio_gerado":
+            self.listeners_relatorio_gerado.append(listener)
+        elif tipo_evento == "grafico_gerado":
+            self.listeners_grafico_gerado.append(listener)
+        elif tipo_evento == "erro":
+            self.listeners_erro.append(listener)
+        else:
+            raise ValueError(f"Tipo de evento não suportado: {tipo_evento}")
 
     def remover_listener(self, listener):
         """
-        Remove um listener de todas as listas de eventos.
+        Remove um listener de todas as listas de eventos.       
         """
         if listener in self.listeners_estatisticas_acedidas:
             self.listeners_estatisticas_acedidas.remove(listener)
@@ -64,11 +56,48 @@ class BotController:
         if listener in self.listeners_erro:
             self.listeners_erro.remove(listener)
 
+    def processar_comando(self, utilizador_id, utilizador_nome, comando, *args):
+        """
+        Processa comandos administrativo recebidoa pela View.        
+        """
+        return self.processar_comando_admin(utilizador_id, comando, *args)
+
+    # === Métodos para compatibilidade retroativa com código existente ===
+    # mantidos para compatibilidade e redirecionam para o método da interface
+
+    def adicionar_listener_estatisticas_acedidas(self, listener):
+        """
+        Adiciona um listener para eventos de acesso a estatísticas.
+        Redireciona para o método da interface para evitar duplicação.        
+        """
+        self.adicionar_listener("estatisticas_acedidas", listener)
+
+    def adicionar_listener_relatorio_gerado(self, listener):
+        """
+        Adiciona um listener para eventos de geração de relatórios.
+        Redireciona para o método da interface para evitar duplicação.        
+        """
+        self.adicionar_listener("relatorio_gerado", listener)
+
+    def adicionar_listener_grafico_gerado(self, listener):
+        """
+        Adiciona um listener para eventos de geração de gráficos.
+        Redireciona para o método da interface para evitar duplicação.        
+        """
+        self.adicionar_listener("grafico_gerado", listener)
+
+    def adicionar_listener_erro(self, listener):
+        """
+        Adiciona um listener para eventos de erro.
+        Redireciona para o método da interface para evitar duplicação.        
+        """
+        self.adicionar_listener("erro", listener)
+
     # === Métodos para emitir eventos ===
 
     def _notificar_estatisticas_acedidas(self, admin_id, estatisticas):
         """
-        Notifica todos os listeners de acesso a estatísticas.
+        Notifica todos os listeners de acesso a estatísticas.        
         """
         for listener in self.listeners_estatisticas_acedidas:
             try:
@@ -78,7 +107,7 @@ class BotController:
 
     def _notificar_relatorio_gerado(self, admin_id, tipo_relatorio, caminho_ficheiro):
         """
-        Notifica todos os listeners de geração de relatórios.
+        Notifica todos os listeners da geração de relatórios.        
         """
         for listener in self.listeners_relatorio_gerado:
             try:
@@ -88,7 +117,7 @@ class BotController:
 
     def _notificar_grafico_gerado(self, admin_id, tipo_grafico, caminho_ficheiro):
         """
-        Notifica todos os listeners de geração de gráficos.
+        Notifica todos os listeners de geração de gráficos.        
         """
         for listener in self.listeners_grafico_gerado:
             try:
@@ -98,7 +127,7 @@ class BotController:
 
     def _notificar_erro(self, admin_id, operacao, mensagem_erro):
         """
-        Notifica todos os listeners de erro.
+        Notifica todos os listeners de erro.        
         """
         for listener in self.listeners_erro:
             try:
@@ -110,7 +139,7 @@ class BotController:
 
     async def processar_comando_admin(self, admin_id, comando, *args):
         """
-        Processa um comando administrativo recebido pela View.
+        Processa um comando administrativo recebido pela View.       
         """
         try:
             if comando == "estatisticas":
@@ -141,7 +170,7 @@ class BotController:
 
     def obter_estatisticas(self, admin_id=None):
         """
-        Obtém estatísticas de uso do bot.
+        Obtém estatísticas de uso do bot.        
         """
         try:
             estatisticas = self.consulta_model.obter_estatisticas()
@@ -159,6 +188,7 @@ class BotController:
     async def gerar_relatorio(self, admin_id=None):
         """
         Gera um relatório com estatísticas de uso do bot.
+        
         """
         try:
             estatisticas = self.obter_estatisticas()
@@ -189,6 +219,7 @@ class BotController:
     def _gerar_conteudo_relatorio(self, estatisticas):
         """
         Gera o conteúdo do relatório com base nas estatísticas fornecidas.
+        
         """
         conteudo = [
             "# Relatório de Uso do Bot LDS\n",
@@ -204,14 +235,14 @@ class BotController:
             for comando, contagem in estatisticas['comandos_populares']:
                 conteudo.append(f"- {comando}: {contagem} consultas\n")
         else:
-            conteudo.append("- Nenhum comando registrado\n")
+            conteudo.append("- Nenhum comando registado\n")
 
         conteudo.append("\n## Secções mais consultadas\n")
         if estatisticas['seccoes_populares']:
             for seccao, contagem in estatisticas['seccoes_populares']:
                 conteudo.append(f"- {seccao}: {contagem} consultas\n")
         else:
-            conteudo.append("- Nenhuma secção registrada\n")
+            conteudo.append("- Nenhuma secção registada\n")
 
         # Adiciona utilizadores ativos
         conteudo.append("\n## Utilizadores mais ativos\n")
@@ -219,13 +250,14 @@ class BotController:
             for utilizador_id, nome, contagem in estatisticas['utilizadores_ativos']:
                 conteudo.append(f"- {nome} (ID: {utilizador_id}): {contagem} consultas\n")
         else:
-            conteudo.append("- Nenhum utilizador registrado\n")
+            conteudo.append("- Nenhum utilizador registado\n")
 
         return conteudo
 
     async def gerar_grafico_comandos(self, admin_id=None):
         """
         Gera um gráfico com os comandos mais populares.
+        
         """
         try:
             estatisticas = self.obter_estatisticas()
@@ -240,7 +272,7 @@ class BotController:
                         transform=ax.transAxes, fontsize=14)
                 ax.set_axis_off()
 
-                # Salva o gráfico
+                # Guarda o gráfico
                 filename = f"grafico_comandos_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
                 fig.savefig(filename)
 
@@ -250,8 +282,7 @@ class BotController:
                 return discord.File(filename)
 
             # Extrai dados para o gráfico
-            comandos, contagens = zip(*estatisticas['comandos_populares']) if estatisticas['comandos_populares'] else (
-            [], [])
+            comandos, contagens = zip(*estatisticas['comandos_populares'])
 
             # Cria a figura
             fig = Figure(figsize=(10, 6))
@@ -283,6 +314,7 @@ class BotController:
     async def gerar_grafico_seccoes(self, admin_id=None):
         """
         Gera um gráfico com as secções mais consultadas.
+        
         """
         try:
             estatisticas = self.obter_estatisticas()
@@ -297,7 +329,7 @@ class BotController:
                         transform=ax.transAxes, fontsize=14)
                 ax.set_axis_off()
 
-                # Salva o gráfico
+                # Guarda o gráfico
                 filename = f"grafico_seccoes_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
                 fig.savefig(filename)
 
@@ -307,8 +339,7 @@ class BotController:
                 return discord.File(filename)
 
             # Extrai dados para o gráfico
-            seccoes, contagens = zip(*estatisticas['seccoes_populares']) if estatisticas['seccoes_populares'] else (
-            [], [])
+            seccoes, contagens = zip(*estatisticas['seccoes_populares'])
 
             # Cria a figura e o gráfico
             fig = Figure(figsize=(10, 6))
@@ -321,7 +352,7 @@ class BotController:
             plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
             fig.tight_layout()
 
-            # Salva o gráfico como imagem
+            # Guarda o gráfico como imagem
             filename = f"grafico_seccoes_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
             fig.savefig(filename)
 
@@ -337,18 +368,13 @@ class BotController:
 
     def obter_utilizador_historico(self, utilizador_id, admin_id=None):
         """
-        Obtém o histórico de consultas de um utilizador específico.        .
+        Obtém o histórico de consultas de um utilizador específico.
+        
         """
         try:
             historico = self.consulta_model.obter_historico_utilizador(utilizador_id)
-
-            # Poderia adicionar um evento específico para acesso ao histórico
-            # mas por simplicidade, não adicionei
-
             return historico
         except Exception as e:
             if admin_id:
                 self._notificar_erro(admin_id, "obter_historico", str(e))
             raise
-
-
