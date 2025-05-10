@@ -247,7 +247,6 @@ async def ajuda(ctx, command_name=None):
     else:
         await view.process_command(ctx, "help")
 
-@bot.command()
 @comando_seguro
 async def help(ctx, command_name=None):
     """Comando de ajuda personalizado"""
