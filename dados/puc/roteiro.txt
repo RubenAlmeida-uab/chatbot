@@ -1,6 +1,0 @@
-# Roteiro
-
-O conteúdo está dividido por semanas:
-- Semana 1-2: Introdução e formação de equipas
-- Semana 3-6: Planeamento e desenvolvimento
-- Semana 7-10: Implementação e avaliação final

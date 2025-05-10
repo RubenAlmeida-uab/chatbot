@@ -1,8 +1,0 @@
-# Inteligência Artificial
-
-O uso de ferramentas de IA (como ChatGPT) é permitido com regras:
-- Declarar sempre o uso
-- Não submeter textos gerados como próprios
-
-Q: Posso usar IA para gerar código?
-A: Sim, desde que seja revisto e adaptado.
