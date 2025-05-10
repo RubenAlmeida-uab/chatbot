@@ -26,12 +26,14 @@ from utils.admin_checker import AdminChecker
 from model.consulta_model import ConsultaModel
 
 
+# noinspection SpellCheckingInspection
 class DiscordView:
     """
     Classe responsável pela View.
     Apresentação de comandos e ficheiros para os utilizadores e administradores.
     """
 
+    # noinspection SpellCheckingInspection
     def __init__(self, bot):
         """
         Inicializa a view do Discord.
@@ -344,6 +346,7 @@ class DiscordView:
             embed.add_field(name="Permissão", value="Apenas administradores", inline=False)
 
             command_descriptions = {
+            command_decriptions = {
                 "relatorio": "Gera um relatório completo de uso do bot em formato Markdown",
                 "estatisticas": "Mostra um resumo das estatísticas de uso do bot",
                 "historico": "Mostra o histórico de comandos de um utilizador específico",
@@ -352,6 +355,10 @@ class DiscordView:
             }
 
             descricao = command_descriptions.get(command_name)
+                "grafico_seccoes": "Gera um gráfico das seções mais consultadas"
+            }
+
+            descricao = command_decriptions.get(command_name)
             if descricao:
                 embed.add_field(name="Descrição", value=descricao, inline=False)
 

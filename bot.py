@@ -24,11 +24,9 @@
 # 🔹 Registo de eventos e tratamento de erros
 # ============================================================
 
-import sys
-import os
-import discord
-import functools
+
 from utils.admin_checker import env_admin
+import sys, os, discord, functools
 from controller.user_commands import UserCommands
 from dotenv import load_dotenv
 from discord.ext import commands
@@ -36,6 +34,15 @@ from view.discord_view import DiscordView
 from utils.logger import bot_logger
 
 """Carrega as variáveis de ambiente do arquivo .env"""
+
+# ===============================
+# Inicialização do sistema
+# ===============================
+
+# Configuração inicial do logger
+bot_logger.info("Iniciando configuração do bot...")
+
+# Carrega as variáveis de ambiente do arquivo .env
 try:
     load_dotenv()
     bot_logger.info("Variáveis de ambiente carregadas com sucesso")
@@ -56,6 +63,11 @@ bot.remove_command('help')
 
 
 # === Eventos base do bot ===
+
+# ===============================
+# Eventos base do bot
+# ===============================
+
 
 @bot.event
 async def on_ready():
@@ -141,6 +153,32 @@ for name, func in controller.obter_comandos().items():
 
 
 # === Comando de verificação admin ===
+=======
+        bot_logger.error(f"Erro ao processar comando: {str(error)}")
+        await ctx.send(f"Ocorreu um erro ao processar o comando: {str(error)}")
+
+
+# ===============================
+# Registo dinâmico de comandos
+# ===============================
+
+
+bot = commands.Bot(command_prefix='!', intents=intents)
+view = DiscordView(bot)
+controller = UserCommands(view)
+def register_command(name, func):
+    @bot.command(name=name)
+    async def cmd(ctx):
+        await func(ctx)
+
+# Registo dinâmico
+for name, func in controller.get_commands().items():
+    register_command(name, func)
+
+
+# ===============================
+# Comando de verificação admin
+# ===============================
 
 @bot.command()
 @comando_seguro
@@ -178,6 +216,12 @@ async def verificaradmin(ctx):
 
 
 # === Comandos administrativos ===
+
+# ===============================
+# Comandos administrativos
+# ===============================
+
+# Comandos administrativos usando o decorador personalizado
 
 @bot.command()
 @env_admin()
@@ -243,6 +287,11 @@ async def grafico_seccoes(ctx):
 
 # === Comandos de ajuda personalizados ===
 
+# ===============================
+# Comando de ajuda personalizado
+# ===============================
+
+# Comandos de ajuda
 @bot.command()
 @comando_seguro
 async def ajuda(ctx, command_name=None):
@@ -258,12 +307,37 @@ async def ajuda(ctx, command_name=None):
 async def help(ctx, command_name=None):
     """Comando de ajuda personalizado"""
     if command_name:
+
         await view.processar_comando(ctx, "help", command_name)
+    else:
+        await view.process_command(ctx, "help")
+
+
+# ===============================
+# Tratamento de erros (admin)
+# ===============================
+
+
+# Tratamento de erros para comandos administrativos
+@relatorio.error
+@estatisticas.error
+@historico.error
+@grafico_comandos.error
+@grafico_seccoes.error
+async def admin_command_error(ctx, error):
+    if isinstance(error, commands.CheckFailure):
+        bot_logger.warning(f"Tentativa de acesso não autorizado ao comando admin por {ctx.author.name}")
+        await ctx.send("❌ Apenas administradores registados podem usar este comando.")
     else:
         await view.processar_comando(ctx, "help")
 
 
 # === Execução do bot ===
+
+# ===============================
+# Execução do bot
+# ===============================
+
 
 try:
     bot_logger.info("Iniciando conexão com o Discord...")

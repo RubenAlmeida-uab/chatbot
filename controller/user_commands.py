@@ -19,6 +19,7 @@
 # - A lista de comandos disponíveis é registada dinamicamente via `get_commands`.
 # ============================================================
 
+
 from model.dados_model import DadosModel
 from model.consulta_model import ConsultaModel
 from utils.logger import bot_logger
@@ -27,6 +28,7 @@ from utils.logger import bot_logger
 class UserCommands:
     def __init__(self, view):
         self.view = view
+
 
     async def usar_uc(self, ctx):
         await self.view.processar_comando(ctx, "uc")
