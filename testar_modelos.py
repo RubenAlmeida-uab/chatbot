@@ -1,15 +1,10 @@
 # ============================================================
-# testar_modelos.py - Testes Manuais para Models da UC
 # testar_modelos.py - Testes aos modelos de dados e estatísticas
 # ============================================================
 # Unidade Curricular:
 # Laboratório de Desenvolvimento de _Software_
 #
 # Objetivo:
-# Testar manualmente as funcionalidades básicas dos modelos:
-# 🔹 Registo e consulta de estatísticas com ConsultaModel
-# 🔹 Leitura de dados informativos com DadosModel
-# 🔹 Validação de exportação de ficheiros JSON
 # Executar testes manuais aos modelos de dados:
 # 🔹 ConsultaModel: registo e análise estatística
 # 🔹 DadosModel: leitura de secções da unidade curricular
@@ -20,21 +15,11 @@ from model.dados_model import DadosModel
 import os
 from datetime import datetime
 
-
-def testar_consulta_model():
-    """
-    Testa funcionalidades principais do modelo de estatísticas:
-    - Registo de consultas por utilizador
-    - Consulta de estatísticas agregadas
-    - Exportação de dados para JSON
-    """
-
 # ===============================
 # Teste ao modelo ConsultaModel
 # ===============================
 
 def testar_modelo_consulta():
-
     print("🔍 Teste: ConsultaModel")
 
     consulta = ConsultaModel()
@@ -58,21 +43,12 @@ def testar_modelo_consulta():
         print("⚠️ Ficheiro de estatísticas não encontrado.")
 
 
-def testar_dados_model():
-    """
-    Testa a leitura das secções informativas da unidade curricular:
-    - Listagem de todas as secções disponíveis
-    - Leitura de conteúdo de uma secção específica
-    """
-
-
 # ===============================
 # Teste ao modelo DadosModel
 # ===============================
 
 
 def testar_modelo_dados():
-
     print("\n🔍 Teste: DadosModel")
 
     dados = DadosModel()
