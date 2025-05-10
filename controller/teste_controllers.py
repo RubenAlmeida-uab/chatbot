@@ -1,23 +1,6 @@
-# ========================================================================
-# teste_controllers.py - Testes Simples dos Controladores do Chatbot
-# ========================================================================
-# Unidade Curricular:
-# Laboratório de Desenvolvimento de Software
-#
-# Objetivo:
-# Este script realiza testes básicos (síncronos) sobre os controladores:
-# 🔹 `UserController`: Testa comandos da unidade curricular e eventos.
-# 🔹 `BotController`: Testa extração de estatísticas e histórico.
-#
-# Funcionalidades:
-# - Simula chamadas de comandos como "ajuda", "listar_seccoes" e "puc"
-# - Exibe saídas formatadas no terminal
-# - Verifica a integração entre controladores e os modelos
-#
-# Notas:
-# - Não usa chamadas assíncronas para facilitar testes manuais
-# - Pode ser executado diretamente pela linha de comando
-# ========================================================================
+"""
+Teste simples dos controllers sem usar métodos assíncronos.
+"""
 
 import os
 import sys
@@ -25,7 +8,6 @@ from user_controller import UserController
 from bot_controller import BotController
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
 
 def main():
     """Função principal para testar os controllers"""
@@ -60,6 +42,7 @@ def main():
     print("\nTestar BotController (apenas métodos síncronos)...")
     bot_controller = BotController()
     
+    
     def ao_aceder_estatisticas(admin_id, estatisticas):
         print(f"Evento: Estatísticas acedidas pelo admin '{admin_id}'")    
     
@@ -82,7 +65,6 @@ def main():
         print("Nenhum histórico encontrado")
     
     print("\n=== Teste concluído com sucesso! ===")
-
 
 if __name__ == "__main__":
     main()
