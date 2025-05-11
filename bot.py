@@ -1,11 +1,30 @@
 # ============================================================
 # bot.py - Projeto de "chatbot" educativo em Discord
 # ============================================================
+# Unidade Curricular:
+# Laboratório de Desenvolvimento de _Software_
+#
+# Autores:
+# 🔹 Duarte Grilo
+# 🔹 Rúben Almeida
+# 🔹 Sofia Semedo
+# 🔹 Yuran Eduardo
+# 🔹 Carlos Costa
+#
+# Objetivo:
+# Este ficheiro define e inicializa o _bot_ Discord, integrando os comandos
+# principais para interação com os utilizadores e funcionalidades de
+# administração e estatísticas.
+#
+# Funcionalidades:
+# 🔹 Comandos informativos sobre a unidade curricular
+# 🔹 Comandos administrativos com autenticação (".env" e permissões Discord)
+# 🔹 Geração de relatórios, gráficos e histórico
+# 🔹 Sistema de ajuda personalizado
+# 🔹 Registo de eventos e tratamento de erros
+# ============================================================
 
-import sys
-import os
-import discord
-import functools
+import sys, os, discord, functools
 from utils.admin_checker import is_env_admin
 from controller.user_commands import UserCommands
 from dotenv import load_dotenv
@@ -13,7 +32,14 @@ from discord.ext import commands
 from view.discord_view import DiscordView
 from utils.logger import bot_logger
 
-"""Carrega as variáveis de ambiente do arquivo .env"""
+# ===============================
+# Inicialização do sistema
+# ===============================
+
+# Configuração inicial do logger
+bot_logger.info("Iniciando configuração do bot...")
+
+# Carrega as variáveis de ambiente do arquivo .env
 try:
     load_dotenv()
     bot_logger.info("Variáveis de ambiente carregadas com sucesso")
@@ -21,16 +47,17 @@ except Exception as e:
     bot_logger.critical(f"Erro ao carregar variáveis de ambiente: {str(e)}")
     sys.exit(1)
 
-
-"""Configuração do bot """
-intents = discord.Intents.default()
-intents.message_content = True
-bot = commands.Bot(command_prefix='!', intents=intents)
-view = DiscordView(bot)
-controller = UserCommands(view)
-
-""" Remover o comando help padrão e usar nosso próprio"""
-bot.remove_command('help')
+# Configuração do bot
+try:
+    intents = discord.Intents.default()
+    intents.message_content = True
+    bot = commands.Bot(command_prefix='!', intents=intents)
+    view = DiscordView(bot)
+    controller = UserCommands(view)
+    bot_logger.info("Bot configurado com sucesso")
+except Exception as e:
+    bot_logger.critical(f"Erro na configuração do bot: {str(e)}")
+    sys.exit(1)
 
 
 # === Eventos base do bot ===
@@ -50,25 +77,25 @@ async def on_message(message):
     # Ignora mensagens do próprio bot
     if message.author == bot.user:
         return
-        
+
     # Verificar se é um comando (começa com !)
     if message.content.startswith('!'):
         command_name = message.content[1:].split()[0].lower()
-        
+
         # Verificar se o comando existe
         if command_name not in [c.name for c in bot.commands]:
             # Enviar mensagem para comandos desconhecidos
             await message.channel.send(f"O comando `!{command_name}` não foi reconhecido. Digite `!ajuda` para ver os comandos disponíveis.")
             return
-            
+
     # Processar o comando normalmente
     await bot.process_commands(message)
 
 """Tratamento de erros gerais"""
 @bot.event
 async def on_command_error(ctx, error):
-    if isinstance(error, commands.CommandNotFound):  
-        #tratado pelo evento on_message     
+    if isinstance(error, commands.CommandNotFound):
+        #tratado pelo evento on_message
         pass
     elif isinstance(error, commands.MissingRequiredArgument):
         await ctx.send(f"Faltam argumentos para este comando. Use !help {ctx.command} para mais informações.")
@@ -84,15 +111,12 @@ async def on_command_error(ctx, error):
 def comando_seguro(func):
     """
     Decorador para tratar erros em comandos do bot de forma uniforme.
-    Evita duplicação de código de tratamento de erros em cada comando.
     """
     @functools.wraps(func)
     async def wrapper(ctx, *args, **kwargs):
         try:
-            #executa o comando original
             return await func(ctx, *args, **kwargs)
         except Exception as e:
-            # Regista o erro no log
             comando = func.__name__
             bot_logger.error(f"Erro ao processar comando {comando}: {str(e)}")
             await ctx.send(f"Erro ao processar o comando: {str(e)}")
@@ -108,7 +132,6 @@ def register_command(name, func):
     @bot.command(name=name)
     @comando_seguro
     async def cmd(ctx):
-        #executa a função de comando 
         await func(ctx)
 
 # Registar comandos do controlador
@@ -121,7 +144,7 @@ for name, func in controller.get_commands().items():
 @bot.command()
 @comando_seguro
 async def verificaradmin(ctx):
-    """Verifica o status de administrador do utilizador"""
+    """Verifica o status do admin ou utilizador"""
     is_discord_admin = ctx.author.guild_permissions.administrator
     is_env_admin = view.admin_checker.is_admin(str(ctx.author.id))
 
@@ -132,7 +155,7 @@ async def verificaradmin(ctx):
     )
 
     embed.add_field(
-        name="ID do utilizador",
+        name="ID do Utilizador",
         value=str(ctx.author.id),
         inline=False
     )
@@ -224,7 +247,6 @@ async def ajuda(ctx, command_name=None):
     else:
         await view.process_command(ctx, "help")
 
-@bot.command()
 @comando_seguro
 async def help(ctx, command_name=None):
     """Comando de ajuda personalizado"""
@@ -234,7 +256,27 @@ async def help(ctx, command_name=None):
         await view.process_command(ctx, "help")
 
 
-# === Execução do bot ===
+# ===============================
+# Tratamento de erros (admin)
+# ===============================
+
+
+# Tratamento de erros para comandos administrativos
+@relatorio.error
+@estatisticas.error
+@historico.error
+@grafico_comandos.error
+@grafico_seccoes.error
+async def admin_command_error(ctx, error):
+    if isinstance(error, commands.CheckFailure):
+        bot_logger.warning(f"Tentativa de acesso não autorizado ao comando admin por {ctx.author.name}")
+        await ctx.send("❌ Apenas administradores registados podem usar este comando.")
+    else:
+        await on_command_error(ctx, error)
+
+# ===============================
+# Execução do bot
+# ===============================
 
 try:
     bot_logger.info("Iniciando conexão com o Discord...")

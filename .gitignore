@@ -17,6 +17,7 @@ controller/teste_*
 view/teste_*
 model/teste_*
 estatistica/*
+tests/*
 
 # Generated files
 *.log
@@ -27,4 +28,3 @@ estatistica/*
 
 # Logs directory
 logs/
-*.log
