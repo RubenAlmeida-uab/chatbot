@@ -16,8 +16,8 @@ models/mock_models.py
 controller/teste_*
 view/teste_*
 model/teste_*
-estatistica/*
-tests/*
+estatistica/
+tests/
 
 # Generated files
 *.log
