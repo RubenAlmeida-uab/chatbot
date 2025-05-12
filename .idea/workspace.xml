@@ -4,30 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c622377b-b6c9-4d62-995a-582b6213e1b0" name="Changes" comment="PT PT">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/Activate.ps1" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/activate" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/activate.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/deactivate.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/dotenv.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/f2py.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/fonttools.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/markdown2.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/normalizer.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/numpy-config.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/pip.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/pip3.12.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/pip3.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/pyftmerge.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/pyftsubset.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/python.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/pythonw.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/ttx.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/weasyprint.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/model.zip" beforeDir="false" />
-    </list>
+    <list default="true" id="c622377b-b6c9-4d62-995a-582b6213e1b0" name="Changes" comment="PT PT" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -88,7 +65,7 @@
       <updated>1747007987187</updated>
       <workItem from="1747007989287" duration="175000" />
       <workItem from="1747008179703" duration="318000" />
-      <workItem from="1747008509559" duration="680000" />
+      <workItem from="1747008509559" duration="1027000" />
     </task>
     <task id="LOCAL-00001" summary="PT PT">
       <option name="closed" value="true" />
@@ -98,7 +75,23 @@
       <option name="project" value="LOCAL" />
       <updated>1747008405031</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="PT PT">
+      <option name="closed" value="true" />
+      <created>1747009328352</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1747009328352</updated>
+    </task>
+    <task id="LOCAL-00003" summary="PT PT">
+      <option name="closed" value="true" />
+      <created>1747009338887</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1747009338887</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
