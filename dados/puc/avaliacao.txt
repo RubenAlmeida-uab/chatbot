@@ -1,0 +1,23 @@
+# Avaliação
+
+A avaliação é composta por:
+
+Avaliação Contínua:
+- e-fólio A (25%)
+- e-fólio B (37.5%)
+- e-fólio C (37.5%)
+- e-fólio Global (60%)
+
+Avaliação Final:
+- Exame final (100%)
+
+Notas:
+- Os e-fólios são trabalhos desenvolvidos ao longo do semestre
+- O e-fólio Global é uma prova online realizada na WISEflow
+- O exame final é uma alternativa para quem não optar pela avaliação contínua
+
+Q: Como funciona a avaliação contínua?
+A: É baseada nos e-fólios (trabalhos) e no e-fólio Global (prova final online).
+
+Q: E se eu optar pelo exame final?
+A: O exame final vale 100% da nota e substitui todas as outras avaliaçõe

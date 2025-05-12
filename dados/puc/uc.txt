@@ -1,0 +1,11 @@
+# Unidade Curricular
+
+- Esta unidade curricular fornece contacto a ferramentas e métodos de desenvolvimento de software.
+
+- O objetivo é minimizar os custos e maximizar a qualidade do software
+
+- Adota-se uma abordagem didática diferente do que é habitual: e-SimProgramming.
+
+- Nesta abordagem, os alunos de engenharia de Software são imersos numa narrativa interativa.
+- Onde assumem o papel de estagiários recém-chegados à empresa "SimProgramming".
+- Dentro dessa narrativa, irão elaborar as várias atividades formativas e de avaliação (e-fólios).

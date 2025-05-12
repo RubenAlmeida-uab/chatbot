@@ -1,0 +1,4 @@
+uc=Unidade Curricular
+ia=Inteligência Artificial
+roteiro=Roteiro de Estudo
+competencias=Competências
