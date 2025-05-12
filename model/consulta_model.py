@@ -143,7 +143,8 @@ class ConsultaModel(IModel):
     def obter_historico_utilizador(self, utilizador_id):
         """
         Retorna o histórico de consultas feitas por um utilizador específico.
-        
+        Garante que a comparação é feita por string, evitando falhas de tipo.
         """
-        return [consulta for consulta in self.registos if consulta["utilizador_id"] == utilizador_id]
+        utilizador_id = str(utilizador_id)
+        return [consulta for consulta in self.registos if str(consulta["utilizador_id"]) == utilizador_id]
 

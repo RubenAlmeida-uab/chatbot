@@ -12,9 +12,7 @@
 # 🔹 Geração de relatórios (Markdown e PDF)
 # ============================================================
 
-import unittest
-import os
-import asyncio
+import unittest, os, asyncio
 from model.dados_model import DadosModel
 from model.consulta_model import ConsultaModel
 from utils.relatorio_exportador import (
@@ -46,7 +44,7 @@ class TestBotFunctionality(unittest.TestCase):
         - Gera e valida ficheiros (JSON, MD, PDF)
         """
         resposta = asyncio.run(
-            self.bot_controller.processar_comando_admin("admin123", "Admin", "ajuda")
+            self.bot_controller.processar_comando_admin("admin123", "ajuda")
         )
         self.assertIn("Comandos disponíveis", resposta)
 

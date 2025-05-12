@@ -39,7 +39,7 @@ def testar_consulta_model():
 
     # 3. Verificar ficheiro exportado
     data_hoje = datetime.now().strftime("%Y%m%d")
-    caminho_json = f"estatistica/relatorios/estatisticas_{data_hoje}.json"
+    caminho_json = f"estatistica/estatisticas/estatisticas_{data_hoje}.json"
     if os.path.exists(caminho_json):
         print(f"📁 Estatísticas exportadas em: {caminho_json}")
     else:
