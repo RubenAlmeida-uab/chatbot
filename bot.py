@@ -24,10 +24,7 @@
 # 🔹 Registo de eventos e tratamento de erros
 # ============================================================
 
-import sys
-import os
-import discord
-import functools
+import sys, os, discord, functools
 from utils.admin_checker import env_admin
 from controller.user_commands import UserCommands
 from dotenv import load_dotenv
