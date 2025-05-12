@@ -4,37 +4,29 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c622377b-b6c9-4d62-995a-582b6213e1b0" name="Changes" comment="PT PT&#10;&#10;# Conflicts:&#10;#&#9;README.md&#10;#&#9;bot.py&#10;#&#9;controller/bot_controller.py&#10;#&#9;controller/teste_controllers.py&#10;#&#9;controller/user_commands.py&#10;#&#9;controller/user_controller.py&#10;#&#9;dados/puc/avaliacao.txt&#10;#&#9;dados/puc/cartao_aprendizagem.txt&#10;#&#9;dados/puc/estrutura_equipa.txt&#10;#&#9;dados/puc/uc.txt&#10;#&#9;interfaces/__init__.py&#10;#&#9;interfaces/icontroller.py&#10;#&#9;interfaces/ieventlistener.py&#10;#&#9;interfaces/imodel.py&#10;#&#9;interfaces/iview.py&#10;#&#9;model/commands.json&#10;#&#9;model/consulta_model.py&#10;#&#9;requirements.txt&#10;#&#9;testar_modelos.py&#10;#&#9;testar_relatorio.py&#10;#&#9;utils/admin_checker.py&#10;#&#9;utils/logger.py&#10;#&#9;utils/relatorio_exportador.py&#10;#&#9;view/bot_view.py&#10;#&#9;view/discord_view.py">
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/estatistica/estatisticas/estatisticas_20250510.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/estatistica/registos/registos.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/estatistica/relatorios/relatorio_bot_lds_20250510_030104.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/logs/chatbot_20250510.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/bot_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/controller/bot_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/teste_controllers.py" beforeDir="false" afterPath="$PROJECT_DIR$/controller/teste_controllers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/user_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/controller/user_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/user_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/controller/user_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dados/puc/avaliacao.txt" beforeDir="false" afterPath="$PROJECT_DIR$/dados/puc/avaliacao.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dados/puc/cartao_aprendizagem.txt" beforeDir="false" afterPath="$PROJECT_DIR$/dados/puc/cartao_aprendizagem.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dados/puc/estrutura_equipa.txt" beforeDir="false" afterPath="$PROJECT_DIR$/dados/puc/estrutura_equipa.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dados/puc/uc.txt" beforeDir="false" afterPath="$PROJECT_DIR$/dados/puc/uc.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/interfaces/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/interfaces/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/interfaces/icontroller.py" beforeDir="false" afterPath="$PROJECT_DIR$/interfaces/icontroller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/interfaces/ieventlistener.py" beforeDir="false" afterPath="$PROJECT_DIR$/interfaces/ieventlistener.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/interfaces/imodel.py" beforeDir="false" afterPath="$PROJECT_DIR$/interfaces/imodel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/interfaces/iview.py" beforeDir="false" afterPath="$PROJECT_DIR$/interfaces/iview.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/model/commands.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/consulta_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/consulta_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testar_modelos.py" beforeDir="false" afterPath="$PROJECT_DIR$/testar_modelos.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testar_relatorio.py" beforeDir="false" afterPath="$PROJECT_DIR$/testar_relatorio.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/admin_checker.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/admin_checker.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/logger.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/relatorio_exportador.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/relatorio_exportador.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/bot_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/view/bot_view.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/discord_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/view/discord_view.py" afterDir="false" />
+    <list default="true" id="c622377b-b6c9-4d62-995a-582b6213e1b0" name="Changes" comment="PT PT">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/Activate.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/activate" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/activate.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/deactivate.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/dotenv.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/f2py.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/fonttools.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/markdown2.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/normalizer.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/numpy-config.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/pip.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/pip3.12.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/pip3.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/pyftmerge.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/pyftsubset.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/python.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/pythonw.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/ttx.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nova pasta/venv/Scripts/weasyprint.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/controller.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/model.zip" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,18 +36,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;Grilocas77&quot;
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Grilocas77"
   }
-}</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/RubenAlmeida-uab/chatbot.git&quot;,
-    &quot;accountId&quot;: &quot;9a5685f7-26b7-4b1f-a4db-75aa7980f79d&quot;
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/RubenAlmeida-uab/chatbot.git",
+    "accountId": "9a5685f7-26b7-4b1f-a4db-75aa7980f79d"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 3
@@ -65,61 +57,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Rebasing main-melhorias-v2&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "Rebasing main-melhorias-v2",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
-  <component name="RdControllerToolWindowsLayoutState" isNewUi="true">
-    <layout>
-      <window_info id="Bookmarks" side_tool="true" />
-      <window_info id="Merge Requests" />
-      <window_info id="Backup and Sync History" />
-      <window_info id="Commit_Guest" show_stripe_button="false" />
-      <window_info id="Learn" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20292969" />
-      <window_info id="Commit" order="1" weight="0.20292969" />
-      <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
-      <window_info id="Welcome to SonarQube for IDE" order="3" show_stripe_button="false" weight="0.3298828" />
-      <window_info id="Welcome to GitHub Copilot" order="4" show_stripe_button="false" weight="0.3298828" />
-      <window_info id="Pull Requests" order="5" weight="0.20292969" />
-      <window_info anchor="bottom" id="Database Changes" />
-      <window_info anchor="bottom" id="TypeScript" />
-      <window_info anchor="bottom" id="TODO" />
-      <window_info anchor="bottom" id="HfCacheToolWindow" />
-      <window_info anchor="bottom" id="File Transfer" />
-      <window_info anchor="bottom" id="Find" />
-      <window_info anchor="bottom" id="Version Control" order="0" />
-      <window_info anchor="bottom" id="Problems" order="1" />
-      <window_info anchor="bottom" id="Problems View" order="2" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="3" visible="true" />
-      <window_info anchor="bottom" id="Services" order="4" weight="0.2905891" />
-      <window_info anchor="bottom" id="Python Packages" order="5" weight="0.2905891" />
-      <window_info anchor="bottom" id="Python Console" order="6" weight="0.2905891" />
-      <window_info anchor="bottom" id="SonarQube for IDE" order="7" weight="0.2905891" />
-      <window_info anchor="right" id="Endpoints" />
-      <window_info anchor="right" id="github.copilotToolWindow" />
-      <window_info anchor="right" id="Coverage" side_tool="true" />
-      <window_info anchor="right" id="GitHub Copilot Chat" />
-      <window_info anchor="right" id="SciView" />
-      <window_info anchor="right" id="Jupyter Variables" side_tool="true" />
-      <window_info anchor="right" content_ui="combo" id="Notifications" order="0" weight="0.25" />
-      <window_info anchor="right" id="AIAssistant" order="1" weight="0.25" />
-      <window_info anchor="right" id="Database" order="2" weight="0.25" />
-      <window_info anchor="right" id="Gradle" order="3" weight="0.25" />
-      <window_info anchor="right" id="Maven" order="4" weight="0.25" />
-      <window_info anchor="right" id="Plots" order="5" weight="0.1" />
-      <window_info anchor="right" id="Meet New UI" order="6" show_stripe_button="false" weight="0.17832032" />
-    </layout>
-  </component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
