@@ -46,7 +46,7 @@ class TestBotFunctionality(unittest.TestCase):
         - Gera e valida ficheiros (JSON, MD, PDF)
         """
         resposta = asyncio.run(
-            self.bot_controller.processar_comando_admin("admin123", "Admin", "ajuda")
+            self.bot_controller.processar_comando_admin("admin123", "ajuda")
         )
         self.assertIn("Comandos disponíveis", resposta)
 
