@@ -12,9 +12,7 @@
 # 🔹 Geração de relatórios (Markdown e PDF)
 # ============================================================
 
-import unittest
-import os
-import asyncio
+import unittest, os, asyncio
 from model.dados_model import DadosModel
 from model.consulta_model import ConsultaModel
 from utils.relatorio_exportador import (
