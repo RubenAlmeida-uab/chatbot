@@ -4,7 +4,7 @@ class IView(ABC):
     """Interface para views do sistema."""
     
     @abstractmethod
-    async def process_command(self, ctx, command_name, *args):
+    async def processar_commando(self, ctx, command_name, *args):
         """Processa um comando recebido e o envia para o controlador adequado."""
         pass
     

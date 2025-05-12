@@ -1,3 +1,17 @@
+# ============================================================
+# consulta_model.py - Gestão de Registos e Estatísticas
+# ============================================================
+# Unidade Curricular:
+# Laboratório de Desenvolvimento de _Software_
+#
+# Objetivo:
+# Modelo responsável por gerir registos de utilização do bot:
+# 🔹 Carregamento e armazenamento persistente de dados
+# 🔹 Registo de comandos utilizados e secções consultadas
+# 🔹 Cálculo e exportação de estatísticas
+# 🔹 Histórico de interações por utilizador
+# ============================================================
+
 import os
 import json
 from datetime import datetime
@@ -12,8 +26,8 @@ class ConsultaModel(IModel):
     
     def __init__(self, caminho_registos="estatistica/registos/registos.json"):
         """
-        Inicializa o modelo de consultas.
-        
+        Inicializa o modelo de consultas com um caminho para o ficheiro de registos.
+        Carrega os dados existentes e o mapeamento de seções.
         """
         self.caminho_registos = caminho_registos
         self.registos = self.carregar_dados()
@@ -22,13 +36,13 @@ class ConsultaModel(IModel):
     def carregar_dados(self):
         """
         Implementação do método da interface para carregar dados.
-        
+        Retorna os registos existentes.
         """
         return self.carregar_registos()
 
     def guardar_dados(self):
         """
-        Implementação do método da interface para guardar dados.
+        Implementação do método da _interface para guardar dados.
         Guarda os registos no ficheiro definido.
         """
         self.guardar_registos()
