@@ -24,4 +24,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY .env .env
 
 # Set the environment variable for python
-CMD ["python", "-m", "bot"]
+CMD ["python", "bot.py"]
