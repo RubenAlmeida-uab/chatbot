@@ -1,3 +1,27 @@
+# ============================================================
+# user_controller.py - Controlador de Comandos de Utilizador
+# ============================================================
+# Unidade Curricular:
+# Laboratório de Desenvolvimento de _Software_
+#
+# Objetivo:
+# Este módulo define o controlador responsável pela gestão das
+# interações dos utilizadores com o _bot, incluindo:
+# 🔹 Processamento de comandos informativos
+# 🔹 Gestão de eventos e notificações (listeners)
+# 🔹 Integração com os modelos de dados e estatísticas
+# 🔹 Compatibilidade com _interface IController
+#
+# Funcionalidades:
+# 🔸 Redirecionamento de comandos para os modelos apropriados
+# 🔸 Registo e análise de consultas
+# 🔸 Suporte a comandos com ou sem secção
+# 🔸 Sistema de notificações para outros componentes
+#
+# Observações:
+# - Centraliza a lógica de resposta aos comandos dos utilizadores
+# - Permite integração flexível com views e controladores superiores
+# ============================================================
 
 from model.dados_model import DadosModel
 from model.consulta_model import ConsultaModel
@@ -31,7 +55,7 @@ class UserController(IController):
     def adicionar_listener(self, tipo_evento, listener):
         """ 
         Adiciona um listener para um tipo específico de evento.
-        Implementação da interface IController.        
+        Implementação da _interface IController.
         """
         if tipo_evento == "comando_processado":
             self.listeners_comando_processado.append(listener)
@@ -83,12 +107,12 @@ class UserController(IController):
             return None  # Indica que este controlador não processou o comando
 
     # === Métodos mantidos por compatibilidade com código existente ===
-    # Estes métodos redirecionam para o método padrão da interface
+    # Estes métodos redirecionam para o método padrão da _interface
 
     def adicionar_listener_comando_processado(self, listener):
         """
         Adiciona um listener para eventos de processamento de comandos.
-        Redireciona para o método da interface para evitar duplicação.     
+        Redireciona para o método da _interface para evitar duplicação.
         """
         self.adicionar_listener("comando_processado", listener)
 
@@ -179,7 +203,7 @@ class UserController(IController):
             # Secção não encontrada - notifica erro
             erro_msg = f"Secção '{seccao}' não encontrada"
             self._notificar_erro(utilizador_id, comando, seccao, erro_msg)
-            # Notifica que o comando foi processado mas com falha
+            # Notifica que o comando foi processado, mas com falha
             self._notificar_comando_processado(utilizador_id, utilizador_nome, comando, seccao, False)
             return f"Desculpe, não encontrei informações sobre '{seccao}' no PUC."
 
@@ -243,7 +267,7 @@ class UserController(IController):
         erro_msg = f"Comando '{comando}' não reconhecido"
         self.logger.warning(erro_msg)
         self._notificar_erro(utilizador_id, comando, None, erro_msg)
-        # Notifica que o comando foi processado mas com falha
+        # Notifica que o comando foi processado, mas com falha
         self._notificar_comando_processado(utilizador_id, utilizador_nome, comando, None, False)
         return "Comando não reconhecido. Digite `!ajuda` para ver os comandos disponíveis."
 

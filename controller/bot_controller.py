@@ -1,8 +1,32 @@
-import io
+# ========================================================================
+# bot_controller.py - Controlador Administrativo do Chatbot Discord
+# ========================================================================
+# Unidade Curricular:
+# Laboratório de Desenvolvimento de _Software
+#
+# Objetivo:
+# Este módulo implementa o _`BotController_`, responsável por gerir
+# funcionalidades administrativas do chatbot, incluindo:
+# 🔹 Geração e exportação de relatórios
+# 🔹 Extração de estatísticas de uso
+# 🔹 Criação de gráficos com base em dados de utilização
+# 🔹 Gestão de histórico de utilizadores
+# 🔹 Notificação de eventos (estatísticas, relatórios, erros, gráficos)
+#
+# Características Técnicas:
+# - _Integra com o _`ConsultaModel_` para recolha de dados
+# - Gera relatórios _`.md_` e gráficos _`.png_`
+# - Produz ficheiros utilizáveis diretamente no Discord
+# - Permite comunicação reativa _através de listeners
+#
+# Notas:
+# - Usa _`matplotlib_` para gráficos e _`discord._File_` para envios
+# - Compatível com _interface _`IController`
+# ========================================================================
+
 import os
 from datetime import datetime
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import discord
 from model.consulta_model import ConsultaModel
@@ -11,7 +35,7 @@ from interfaces import IController
 
 class BotController(IController):
     """
-    Controlador para gerir as funções administrativas do bot.
+    Controlador para gerir as funções administrativas do _bot.
     """
 
     def __init__(self):
@@ -58,38 +82,38 @@ class BotController(IController):
 
     def processar_comando(self, utilizador_id, utilizador_nome, comando, *args):
         """
-        Processa comandos administrativo recebidoa pela View.        
+        Processa _comandos administrativo recebidoa pela View.
         """
         return self.processar_comando_admin(utilizador_id, comando, *args)
 
     # === Métodos para compatibilidade retroativa com código existente ===
-    # mantidos para compatibilidade e redirecionam para o método da interface
+    # mantidos para compatibilidade e redirecionam para o método da _interface
 
     def adicionar_listener_estatisticas_acedidas(self, listener):
         """
         Adiciona um listener para eventos de acesso a estatísticas.
-        Redireciona para o método da interface para evitar duplicação.        
+        Redireciona para o método da _interface para evitar duplicação.
         """
         self.adicionar_listener("estatisticas_acedidas", listener)
 
     def adicionar_listener_relatorio_gerado(self, listener):
         """
         Adiciona um listener para eventos de geração de relatórios.
-        Redireciona para o método da interface para evitar duplicação.        
+        Redireciona para o método da _interface para evitar duplicação.
         """
         self.adicionar_listener("relatorio_gerado", listener)
 
     def adicionar_listener_grafico_gerado(self, listener):
         """
         Adiciona um listener para eventos de geração de gráficos.
-        Redireciona para o método da interface para evitar duplicação.        
+        Redireciona para o método da _interface para evitar duplicação.
         """
         self.adicionar_listener("grafico_gerado", listener)
 
     def adicionar_listener_erro(self, listener):
         """
         Adiciona um listener para eventos de erro.
-        Redireciona para o método da interface para evitar duplicação.        
+        Redireciona para o método da _interface para evitar duplicação.
         """
         self.adicionar_listener("erro", listener)
 
@@ -166,7 +190,7 @@ class BotController(IController):
                 return None  # Comando não reconhecido
         except Exception as e:
             self._notificar_erro(admin_id, comando, str(e))
-            raise  # Re-lança a exceção para ser tratada na camada superior
+            raise  # Reenvia a exceção para ser tratada na camada superior
 
     def obter_estatisticas(self, admin_id=None):
         """
@@ -187,7 +211,7 @@ class BotController(IController):
 
     async def gerar_relatorio(self, admin_id=None):
         """
-        Gera um relatório com estatísticas de uso do bot.
+        Gera um relatório com estatísticas de uso do _bot.
         
         """
         try:

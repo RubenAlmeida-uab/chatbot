@@ -1,6 +1,20 @@
-#módulo esta a implementar uma funcionalidade que pode ser implementada caso os administradores decidam gerar relatórios 
-# em PDF com as estatísticas de uso do bot.Atualmente a geracão de relatórios em PDF não está implementada, mas a estrutura básica para isso está presente.
+# ============================================================
+# bot_view.py - Geração de Relatórios PDF do _Bot
+# ============================================================
+# Unidade Curricular:
+# Laboratório de Desenvolvimento de _Software_
 #
+# Objetivo:
+# Este módulo define a _interface de apresentação de dados do _bot:
+# 🔹 Estrutura para geração de relatórios PDF com estatísticas
+# 🔹 Organização visual dos dados de utilização
+# 🔹 Integração opcional com o Discord para envio de ficheiros
+#
+# Nota:
+# A funcionalidade de geração de PDF ainda não está ativa por defeito,
+# mas está estruturada para futura implementação, caso os administradores
+# decidam ativá-la.
+# ============================================================
 
 import os
 from datetime import datetime
