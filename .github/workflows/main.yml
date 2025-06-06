@@ -28,4 +28,4 @@ jobs:
           context: .
           platforms: linux/arm64
           push: true
-          tags: youruser/yourimage:arm64
+          tags: rubenalmeida/chatbot:latest-arm64
