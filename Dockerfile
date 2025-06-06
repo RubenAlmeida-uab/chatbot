@@ -21,7 +21,9 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Set environment variables
-COPY .env .env
+COPY .env /app/.env
+
+RUN echo "Conteúdo de /app/.env:" && cat /app/.env
 
 # Set the environment variable for python
-CMD ["python", "bot.py"]
+ENTRYPOINT ["python", "-m", "bot"]
