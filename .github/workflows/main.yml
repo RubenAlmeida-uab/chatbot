@@ -3,7 +3,7 @@ name: Build ARM64 Docker Image
 
 on:
   push:
-    branches: [main-melhorias-v2]
+    branches: [main]
 
 jobs:
   build:
