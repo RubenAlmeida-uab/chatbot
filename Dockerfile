@@ -14,11 +14,8 @@ WORKDIR /app
 # Copy the application code
 COPY . .
 
-# Copy the requirements file
-COPY requirements.txt .
-
 # Install Python requirements
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Set the environment variable for python
-ENTRYPOINT ["python", "-m", "bot"]
+ENTRYPOINT ["python", "bot.py"]
