@@ -20,10 +20,5 @@ COPY requirements.txt .
 # Install Python requirements
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Set environment variables
-COPY .env /app/.env
-
-RUN echo "Conteúdo de /app/.env:" && cat /app/.env
-
 # Set the environment variable for python
 ENTRYPOINT ["python", "-m", "bot"]
