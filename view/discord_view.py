@@ -413,7 +413,7 @@ class DiscordView:
                     "!estatisticas - Mostra estatísticas de uso",
                     "!historico @user - Histórico de um utilizador",
                     "!grafico_comandos - Gráfico dos comandos mais usados",
-                    "!grafico_seccoes - Gráfico das secções mais consultadas"
+                    "!grafico_seccoes - Gráfico das secções mais consultadas",
                     "!gerar_relatorio - Gera relatório em PDF"
                 ]),
                 inline=False
