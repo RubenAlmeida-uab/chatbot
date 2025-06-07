@@ -34,5 +34,9 @@ jobs:
           push: true
           tags: rubenalmeida/chatbot:latest-arm64
 
+      - name: Test ARM64 image
+        run: |
+          docker run --rm rubenalmeida/chatbot:latest-arm64 
+
       - name: Clean up .env
         run: rm -f .env
