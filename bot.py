@@ -262,9 +262,11 @@ async def help(ctx, command_name=None):
 
 # === Execução do bot ===
 
-try:
-    bot_logger.info("Iniciando conexão com o Discord...")
-    bot.run(os.getenv('DISCORD_TOKEN'))
-except Exception as e:
-    bot_logger.critical(f"Erro fatal ao iniciar o bot: {str(e)}")
+token = os.getenv('DISCORD_TOKEN')
+
+if not token:
+    bot_logger.critical("❌ Variável de ambiente DISCORD_TOKEN não está definida!")
     sys.exit(1)
+
+bot_logger.info("🟢 Token encontrado, a iniciar bot...")
+bot.run(token)
