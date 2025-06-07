@@ -237,6 +237,13 @@ async def grafico_seccoes(ctx):
     """Gera um gráfico das seções mais consultadas"""
     await view.processar_comando(ctx, "grafico_seccoes")
 
+@bot.command()
+@env_admin()
+@comando_seguro
+async def gerar_relatorio(ctx):
+    """Gera um relatório em HTML com as estatísticas do bot"""
+    await view.processar_comando(ctx, "gerar_relatorio")
+
 
 # === Comandos de ajuda personalizados ===
 

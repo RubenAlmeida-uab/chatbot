@@ -31,7 +31,9 @@ from matplotlib.figure import Figure
 import discord
 from model.consulta_model import ConsultaModel
 from interfaces import IController
-
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import cm
 
 class BotController(IController):
     """
@@ -173,16 +175,20 @@ class BotController(IController):
                 return estatisticas
             elif comando == "relatorio":
                 ficheiro = await self.gerar_relatorio(admin_id)
+                self.consulta_model.registar_consulta_admin(admin_id, nome, comando)
                 return ficheiro
             elif comando == "grafico_comandos":
                 ficheiro = await self.gerar_grafico_comandos(admin_id)
+                self.consulta_model.registar_consulta_admin(admin_id, nome, comando)
                 return ficheiro
             elif comando == "grafico_seccoes":
                 ficheiro = await self.gerar_grafico_seccoes(admin_id)
+                self.consulta_model.registar_consulta_admin(admin_id, nome, comando)
                 return ficheiro
             elif comando == "historico" and len(args) > 0:
                 utilizador_id = args[0]
                 historico = self.obter_utilizador_historico(utilizador_id, admin_id)
+                self.consulta_model.registar_consulta_admin(admin_id, nome, comando)
                 return historico
             elif comando == "ajuda":
                 return "Comandos disponíveis: estatisticas, relatorio, grafico_comandos, grafico_seccoes, historico"
@@ -389,6 +395,61 @@ class BotController(IController):
         except Exception as e:
             if admin_id:
                 self._notificar_erro(admin_id, "gerar_grafico_seccoes", str(e))
+            raise
+    
+    async def gerar_pdf_relatorio(self, admin_id=None):
+        """
+        Gera um PDF contendo o conteúdo textual e os gráficos de comandos e secções.
+        """
+        try:
+            estatisticas = self.obter_estatisticas()
+            conteudo = self._gerar_conteudo_relatorio(estatisticas)
+    
+            # Cria o PDF
+            filename = f"relatorio_bot_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+            caminho_pdf = os.path.join(os.getcwd(), filename)
+            c = canvas.Canvas(caminho_pdf, pagesize=A4)
+            largura, altura = A4
+            margem = 2 * cm
+            linha = altura - margem
+    
+            # Escreve o conteúdo textual no PDF
+            for linha_texto in conteudo:
+                if linha < margem:
+                    c.showPage()
+                    linha = altura - margem
+                c.setFont("Helvetica", 11)
+                c.drawString(margem, linha, linha_texto.strip())
+                linha -= 14
+    
+            # Gera gráficos e os insere no PDF
+            grafico_comandos = await self.gerar_grafico_comandos(admin_id)
+            grafico_seccoes = await self.gerar_grafico_seccoes(admin_id)
+    
+            # Nova página para gráficos
+            c.showPage()
+            linha = altura - margem
+    
+            # Inserir gráfico de comandos
+            c.setFont("Helvetica-Bold", 12)
+            c.drawString(margem, linha, "Gráfico: Comandos mais populares")
+            linha -= 1.2 * cm
+            c.drawImage(grafico_comandos.fp.name, margem, linha - 10*cm, width=16*cm, height=9*cm)
+            linha -= 10.5 * cm
+    
+            # Inserir gráfico de secções
+            c.drawString(margem, linha, "Gráfico: Secções mais consultadas")
+            linha -= 1.2 * cm
+            c.drawImage(grafico_seccoes.fp.name, margem, linha - 10*cm, width=16*cm, height=9*cm)
+    
+            # Finaliza o PDF
+            c.save()
+    
+            return discord.File(caminho_pdf)
+    
+        except Exception as e:
+            if admin_id:
+                self._notificar_erro(admin_id, "gerar_pdf_relatorio", str(e))
             raise
 
     def obter_utilizador_historico(self, utilizador_id, admin_id=None):

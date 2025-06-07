@@ -1,29 +1,27 @@
 # Chatbot MVC com Bot do Discord
 
 
-Este é um chatbot Discord implementado usando o padrão MVC (Model-View-Controller).
+Este é um chatbot Discord implementado usando o padrão MVC (Model-View-Controller). Foi desenvolvido para responder às dúvidas/questões dos estudantes face à UC de Laboratório de Desenvolvimento de Software.
+
+**Versões de python e pip configurados onde este bot foi desenvolvido**:
+- python v.3.12.3
+- pip v.24.0
+
 
 ## Estrutura do Projeto
 
 ```
 .
 ├── bot.py              # Arquivo principal do bot
+├── requirements.txt    # Requirements necessários ao bom funcionamento do projeto
 ├── controller/         # Camada de Controller
-├── model/             # Camada de Model
-├── view/              # Camada de View
-├── utils/             # Utilitários
-│   └── logger.py     # Sistema de logging
-├── dados/            # Dados do chatbot
-│   └── puc/         # Informações da UC
-└── logs/            # Logs do sistema
-=======
-![alt text](image.png)
-
-Instalar os requirements:
-
-```
-pip install -r requirements.txt
-
+├── model/              # Camada de Model
+├── view/               # Camada de View
+├── interfaces/         # Camada de interfaces 
+├── utils/              # Utilitários ( Validação conta admin, gestão de logs e exportação de estatisticas )
+├── dados/              # Dados do chatbot
+│   └── puc/            # Informações da UC
+└── logs/               # Logs do sistema ( Apenas criado quando o bot arranca )
 ```
 
 ## Funcionalidades
@@ -44,7 +42,10 @@ pip install -r requirements.txt
 ### Comandos de Administrador
 - `!relatorio` - Gera relatório de uso
 - `!estatisticas` - Mostra estatísticas
-- `!historico ` - Histórico de um utilizador
+- `!historico` - Histórico de um utilizador
+- `!grafico_comandos` - Gera um gráfico dos comandos mais utilizados
+- `!grafico_seccoes` - Gera um gráfico das secções mais consultadas
+- `!gerar_relatorio` - Gera um relatório em PDF com estatísticas e gráficos
 
 ### Comandos de Ajuda
 - `!help` - Mostra todos os comandos disponíveis
@@ -58,9 +59,10 @@ O sistema de logs foi implementado para facilitar o debug e monitoramento do bot
 - Formato: `chatbot_YYYYMMDD.log`
 - Níveis: DEBUG, INFO, WARNING, ERROR, CRITICAL
 - Rotação: 5MB por arquivo, mantém últimos 5 arquivos
-```
+
 
 ## Configuração
+
 Crie um arquivo `.env` com:
 ```
 DISCORD_TOKEN=seu_token_aqui
@@ -75,6 +77,8 @@ pip install -r requirements.txt
 
 3. Execute o bot:
 ```bash
+python -m bot 
+# ou 
 python bot.py
 ```
 
@@ -85,6 +89,3 @@ python bot.py
 - **Controller (Sofia)**: Implementação da camada de Controller, processamento de comandos
 - **View (Yuran)**: Interface Discord, comandos e apresentação
 - **Tester (Carlos)**: Testes funcionais e validação
-=======
-pip install -r requirements-testes.txt
-```

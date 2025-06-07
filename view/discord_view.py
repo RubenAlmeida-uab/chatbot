@@ -16,7 +16,7 @@
 # - Suporta ajuda contextual, histórico de comandos e visualização de dados
 # ============================================================
 
-import discord
+import discord, os
 from datetime import datetime
 from pathlib import Path
 from controller.bot_controller import BotController
@@ -63,7 +63,7 @@ class DiscordView:
 
             if command_name in self.controller.comandos_validos:
                 await self._usar_comando_puc(ctx, command_name)
-            elif command_name in ["relatorio", "estatisticas", "historico", "grafico_comandos", "grafico_seccoes"]:
+            elif command_name in ["relatorio", "estatisticas", "historico", "grafico_comandos", "grafico_seccoes", "gerar_relatorio"]:
                 await self._usar_comando_administrador(ctx, command_name, *args)
             elif command_name in ["help", "ajuda"]:
                 await self._usar_comando_help(ctx, *args)
@@ -108,6 +108,7 @@ class DiscordView:
         try:
             if command_name == "relatorio":
                 report_file = await self.bot.controller.gerar_relatorio(str(ctx.author.id))
+                self.consulta_model.registar_consulta_admin(ctx.author.id, command_name, ctx.author.name)
                 await ctx.send("Aqui está o relatório solicitado:", file=report_file)
             elif command_name == "estatisticas":
                 estatisticas = self.bot.controller.obter_estatisticas(str(ctx.author.id))
@@ -115,8 +116,17 @@ class DiscordView:
                 await self._enviar_resposta_estatisticas(ctx, estatisticas)
             elif command_name == "historico":
                 await self._usar_comando_historico(ctx, *args)
+                self.consulta_model.registar_consulta_admin(ctx.author.id, command_name, ctx.author.name)
             elif command_name in ["grafico_comandos", "grafico_seccoes"]:
                 await self._usar_comando_grafico(ctx, command_name)
+                self.consulta_model.registar_consulta_admin(ctx.author.id, command_name, ctx.author.name)
+            elif command_name == "gerar_relatorio":
+                pdf_file = await self.bot.controller.gerar_pdf_relatorio(str(ctx.author.id))
+                await ctx.send("📄 Relatório gerado com sucesso:", file=pdf_file)
+                self.consulta_model.registar_consulta_admin(ctx.author.id, command_name, ctx.author.name)
+
+                # Remove o ficheiro local
+                os.remove(pdf_file.fp.name)
 
             self.logger.info(f"Comando administrativo {command_name} processado com sucesso")
 
@@ -349,7 +359,8 @@ class DiscordView:
                 "estatisticas": "Mostra um resumo das estatísticas de uso do bot",
                 "historico": "Mostra o histórico de comandos de um utilizador específico",
                 "grafico_comandos": "Gera um gráfico dos comandos mais utilizados",
-                "grafico_seccoes": "Gera um gráfico das secções mais consultadas"
+                "grafico_seccoes": "Gera um gráfico das secções mais consultadas",
+                "gerar_relatorio": "Gera um relatório em PDF com estatísticas e gráficos"
             }
 
             descricao = command_descriptions.get(command_name)
@@ -403,6 +414,7 @@ class DiscordView:
                     "!historico @user - Histórico de um utilizador",
                     "!grafico_comandos - Gráfico dos comandos mais usados",
                     "!grafico_seccoes - Gráfico das secções mais consultadas"
+                    "!gerar_relatorio - Gera relatório em PDF"
                 ]),
                 inline=False
             )
