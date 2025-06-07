@@ -1,4 +1,11 @@
 uc=Unidade Curricular
 ia=Inteligência Artificial
-roteiro=Roteiro de Estudo
+roteiro=Roteiro
 competencias=Competências
+avaliacao=Avaliação
+metodologia=Metodologia
+recursos=Recursos
+calendario=Calendário
+exame=Exame
+estrutura=Estrutura Equipas
+cartao=Cartão Aprendizagem

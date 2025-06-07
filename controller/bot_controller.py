@@ -161,13 +161,14 @@ class BotController(IController):
 
     # === Métodos para processar comandos da View ===
 
-    async def processar_comando_admin(self, admin_id, comando, *args):
+    async def processar_comando_admin(self, admin_id, nome, comando, *args):
         """
         Processa um comando administrativo recebido pela View.       
         """
         try:
             if comando == "estatisticas":
                 estatisticas = self.obter_estatisticas(admin_id)
+                self.consulta_model.registar_consulta_admin(admin_id, nome, comando)
                 self._notificar_estatisticas_acedidas(admin_id, estatisticas)
                 return estatisticas
             elif comando == "relatorio":

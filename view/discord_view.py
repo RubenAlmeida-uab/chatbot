@@ -111,13 +111,14 @@ class DiscordView:
                 await ctx.send("Aqui está o relatório solicitado:", file=report_file)
             elif command_name == "estatisticas":
                 estatisticas = self.bot.controller.obter_estatisticas(str(ctx.author.id))
+                self.consulta_model.registar_consulta_admin(ctx.author.id, command_name, ctx.author.name)
                 await self._enviar_resposta_estatisticas(ctx, estatisticas)
             elif command_name == "historico":
                 await self._usar_comando_historico(ctx, *args)
             elif command_name in ["grafico_comandos", "grafico_seccoes"]:
                 await self._usar_comando_grafico(ctx, command_name)
 
-            self.logger.debug(f"Comando administrativo {command_name} processado com sucesso")
+            self.logger.info(f"Comando administrativo {command_name} processado com sucesso")
 
         except Exception as e:
             self.logger.error(f"Erro ao processar comando administrativo {command_name}: {str(e)}")

@@ -87,7 +87,7 @@ class UserController(IController):
         if removed:
             self.logger.debug(f"Listener removido: {listener.__name__ if hasattr(listener, '__name__') else 'anónimo'}")
 
-    def processar_comando(self, utilizador_id, utilizador_nome, comando, seccao=None):
+    def processar_comando(self, utilizador_id, utilizador_nome, comando):
         """
         Processa um comando recebido pela View.              
         """
@@ -97,10 +97,10 @@ class UserController(IController):
         if comando in self.comandos_validos:
             # Regista a consulta no modelo - este é o ponto central e único para registro de consultas
             self.logger.debug(f"A registar consulta para comando '{comando}' de {utilizador_nome}")
-            self.consulta_model.registar_consulta(utilizador_id, utilizador_nome, comando, seccao)
+            self.consulta_model.registar_consulta(utilizador_id, utilizador_nome, comando)
 
             # Processa o comando e obtém a resposta
-            resposta = self.obter_resposta(utilizador_id, utilizador_nome, comando, seccao)
+            resposta = self.obter_resposta(utilizador_id, utilizador_nome, comando)
             return resposta
         else:
             self.logger.debug(f"Comando '{comando}' não é processado por este controlador")
